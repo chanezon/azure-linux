@@ -1,0 +1,39 @@
+#cloud-config
+coreos:
+    etcd:
+        name: pat-coreos-4
+    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        discovery: https://discovery.etcd.io/b3d8858b68980...
+    # multi-region and multi-cloud deployments need to use $public_ipv4
+        addr: $private_ipv4:4001
+        peer-addr: $private_ipv4:7001
+    fleet:
+        public-ip: $private_ipv4
+        metadata: region=us-west
+    units:
+      - name: etcd.service
+        command: start
+        after: create-etcd-fleet-env.service
+      - name: fleet.service
+        command: start
+        after: etcd.service
+      - name: create-etcd-fleet-env.service
+        command: start
+        content: |
+          [Unit]
+          Description=creates etcd environment
+
+          [Service]
+          Before=etcd.service
+          Type=oneshot
+          ExecStart=/bin/sh -c "sed -i \"s/=:/=`ifconfig eth0 | grep 'inet ' | awk '{print $2}'`:/\" /run/systemd/system/etcd.service.d/20-cloudinit.conf && echo \"Environment=\"FLEET_PUBLIC_IP=`ifconfig eth0 | grep 'inet ' | awk '{print $2}'`\"\" >> /run/systemd/system/fleet.service.d/20-cloudinit.conf && systemctl daemon-reload && systemctl etcd restart"
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABA...
+
+hostname: pat-coreos-4
+write_files:
+  - path: /home/pat/agent-was-here.txt
+    permissions: 0644
+    owner: root
+    content: |
+      been there
