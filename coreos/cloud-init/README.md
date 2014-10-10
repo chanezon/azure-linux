@@ -15,6 +15,7 @@ On the Azure side, I have one vm per cloud service, to avoid messing with port m
 Production setup would probably use one cloud-service per tier, with either an internal load balancer http://msdn.microsoft.com/library/azure/dn690121.aspx, or a load balanced set http://msdn.microsoft.com/en-us/library/azure/dn655055.aspx
 
 Here are the steps
+Create a virtual network in Azure. Here it is called pat-coreos-network
 modify master-with-ip.yaml with https://discovery.etcd.io/new discovery url, name and hostname
 for i in [1..n]
 create n of these files
