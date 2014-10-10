@@ -26,7 +26,7 @@ azure vm image create mycoreosimage ./pat-coreos-3-202407-50035-os-2014-10-08.vh
 ```
 for i in [1..n] fo these steps
 ```
-azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/azureCert.pem pat-coreos-1 mycoreosimage --virtual-network-name pat-coreos-network username password --custom-data ~/code/coreos/master-with-ip.yaml
+azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/yourpemfile.pem pat-coreos-1 mycoreosimage --virtual-network-name pat-coreos-network username password --custom-data ~/code/coreos/cloud-init-i.yml
 #configure ssh to pick up your private key
 ssh username@pat-coreos-1.cloudapp.net
 sudo rm /etc/machine-id 
