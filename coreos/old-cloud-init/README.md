@@ -1,12 +1,13 @@
 # Getting a CoreOS cluster up and running on Azure
 
-This is subject to change. Many hacks to workaround waagent for CoreOS not being finalized yet.
+**This documentation is obsolete.**
+Many hacks to workaround waagent for CoreOS not being finalized yet.
 
 Use image at https://patcoreos.blob.core.windows.net/vm-images/pat-coreos-3-202407-50035-os-2014-10-08.vhd
 
 It includes the modified waagent at https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/waagent
 
-This agent includes @dcrawford translate pull request https://github.com/Azure/WALinuxAgent/pull/47/files and adds a hack that copies the cloud-init file to /usr/share/oem/cloud-config.yml 
+This agent includes @dcrawford translate pull request https://github.com/Azure/WALinuxAgent/pull/47/files and adds a hack that copies the cloud-init file to /usr/share/oem/cloud-config.yml
 
 With this, you need to reboot for cloud-init to be picked up.
 You also need to rm /etc/machine-id
