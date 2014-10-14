@@ -10,7 +10,7 @@ azure vm image create coreos-test-3 --location "West US" --blob-url http://<your
 ```
 Create a virtual network in Azure.
 
-modify cloud-init.yaml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example cloud-init.yml file. Then create the VMs. These commands create ssh endpoints for easier debugging.
+modify cloud-init.yaml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example [cloud-init.yml](/cloud-init.yml) file. Then create the VMs. These commands create ssh endpoints for easier debugging.
 
 ```shell
 azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh>.pem <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data ~/<cloud-init-file>.yml
