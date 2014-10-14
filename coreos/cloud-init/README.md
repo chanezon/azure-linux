@@ -1,0 +1,27 @@
+# Getting a CoreOS cluster up and running on Azure
+
+This documentation is subject to change. It relies on the current development image of CoreOS for Azure from @dcrawford. In this image, he fixed most of the issues from previous image: cloud-init file is base64 decoded, and picked up by coreos. $private_ipv4 variables are interpolated.
+
+Use image at https://coreos.blob.core.windows.net/public/prod-test-3.vhd. First create an image in your subscription based on this blob.
+
+```shell
+azure vm disk upload --verbose https://coreos.blob.core.windows.net/public/prod-test-3.vhd http://<your-storage-account>.blob.core.windows.net/<your-container>/prod-test-3.vhd  <your storage key>
+azure vm image create coreos-test-3 --location "West US" --blob-url http://<your-storage-account>.blob.core.windows.net/<your-container>/prod-test-3.vhd --os linux
+```
+Create a virtual network in Azure.
+
+modify cloud-init.yaml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example cloud-init.yml file. Then create the VMs. These commands create ssh endpoints for easier debugging.
+```shell
+azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh>.pem <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data ~/<cloud-init-file>.yml
+```
+
+Then check your cluster:
+```shell
+ssh username@hostname.cloudapp.net
+sudo etcdctl ls --recursive
+sudo fleetctl list-machines
+```
+
+Then you can start playing with fleet on your cluster.
+
+Have fun!

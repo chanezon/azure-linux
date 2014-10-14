@@ -1,0 +1,21 @@
+#cloud-config
+coreos:
+    etcd:
+        name: pat-coreos-4
+    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+        discovery: https://discovery.etcd.io/b3d8858b68980...
+    # multi-region and multi-cloud deployments need to use $public_ipv4
+        addr: $private_ipv4:4001
+        peer-addr: $private_ipv4:7001
+    fleet:
+        public-ip: $private_ipv4
+        metadata: region=us-west
+    units:
+      - name: etcd.service
+        command: start
+      - name: fleet.service
+        command: start
+        after: etcd.service
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABA...
+hostname: pat-coreos-4
