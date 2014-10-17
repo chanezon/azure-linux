@@ -35,3 +35,24 @@ azure vm endpoint create <hostname> 4001 4001
 ```
 
 Have fun with CoreOS on Azure!
+
+## Configuring a remote fleet client
+
+If you want to manage your cluster with fleet from a remote client, on a Mac, you need to build fleetctl on Mac.
+
+```shell
+git clone https://github.com/coreos/fleet.git
+cd fleet/
+./build
+cp bin/fleetctl /usr/local/bin
+```
+
+fleetctl client tool uses SSH to interact with a fleet cluster (cf https://github.com/coreos/fleet/blob/master/Documentation/using-the-client.md#remote-fleet-access & https://github.com/coreos/fleet/blob/master/Documentation/deployment-and-configuration.md). You need to configure ssh to use the private key for the public key you specified in cloud-init file.
+
+```shell
+ssh-add ~/.ssh/azurePrivateKey.key
+fleetctl --tunnel <hostname>.cloudapp.net:22 list-machines
+MACHINE IP METADATA
+415162a4... 10.0.0.5 region=us-west
+7c7f60e0... 10.0.0.4 region=us-west
+```
