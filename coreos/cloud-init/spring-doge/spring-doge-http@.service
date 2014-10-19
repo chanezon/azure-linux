@@ -1,0 +1,11 @@
+[Unit]
+Description=spring-doge
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill spring-doge-%i
+ExecStartPre=-/usr/bin/docker rm spring-doge-%i
+ExecStart=/usr/bin/docker run --rm --name spring-doge-%i -e MONGODB_URI=mongodb://username:password@hotname:port/dbname -p 8080:8080 chanezon/spring-doge
+ExecStop=/usr/bin/docker stop spring-doge-%i
+
+[X-Fleet]
+Conflicts=spring-doge-http@*.service
