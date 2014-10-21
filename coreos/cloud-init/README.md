@@ -161,6 +161,10 @@ export FLEETCTL_TUNNEL=<cloud-service-name>.cloudapp.net:<ssh-port>
 
 Many Enterprise Java developers are using the Spring Framework. I picked @joshlong's latest sample app, showcasing Spring Boot, a framework designed to build micro services, and Java 1.8, [Spring-doge](https://github.com/joshlong/spring-doge). It's a state of the art implementation of the [Doge meme](http://en.wikipedia.org/wiki/Doge_(meme) :-). You can watch Josh explain the [code behind Spring Doge on Youtube](https://www.youtube.com/watch?v=eCos5VTtZoI).
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=eCos5VTtZoI
+" target="_blank"><img src="http://img.youtube.com/vi/eCos5VTtZoI/0.jpg"
+alt="Josh on Spring-doge" width="240" height="180" border="10" /></a>
+
 Spring-doge uses a MongoDB Database as a backend. You can setup a MongoDB cluster in your CoreOS cluster. To keep the example simple, I'd suggest using a hosted MongoDB: you can have one small instance of MongoDB for free using the [MongoLabs Azure Add-on](http://azure.microsoft.com/en-us/gallery/store/mongolab/mongolab/). Signup there and copy your Mongo connection uri: mongodb://username:password@hotname:port/dbname
 
 @jamesdbloom built a convenient Docker container with Java 8 and Maven, jamesdbloom/docker-java8-maven.
@@ -179,5 +183,7 @@ spring-doge-http@2.service 7c7f60e0.../10.0.0.4 active running
 ```
 
 In a browser navigate to http://<cloud-service-name>.cloudapp.net/, and have fun with Spring-doge!
+
 Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
+
 <img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
