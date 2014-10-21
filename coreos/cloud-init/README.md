@@ -12,8 +12,8 @@ First you need to pick a region for your cluster. Here we will use "West US"
 Use image at http://alpha.release.core-os.net/amd64-usr/469.0.0/coreos_production_azure_image.vhd.bz2. First create an image in your subscription based on this blob (actually this is a bz2 compressed image, so you'll need to download it on a vm, uncompress it, and upload it to your storage account. Very soon there will be a public vhd image in the gallery to pull from).
 
 ```shell
-azure vm disk upload --verbose https://coreos.blob.core.windows.net/public/prod-test-3.vhd http://<your-storage-account>.blob.core.windows.net/<your-container>/prod-test-3.vhd  <your storage key>
-azure vm image create coreos-test-3 --location "West US" --blob-url http://<your-storage-account>.blob.core.windows.net/<your-container>/prod-test-3.vhd --os linux
+azure vm disk upload --verbose https://coreostest.blob.core.windows.net/coreos/coreos_production_azure_image.vhd http://<your-storage-account>.blob.core.windows.net/<your-container>/coreos.vhd  <your storage key>
+azure vm image create coreos-image --location "West US" --blob-url http://<your-storage-account>.blob.core.windows.net/<your-container>/coreos.vhd --os linux
 ```
 
 ### Create your cloud-init config file
