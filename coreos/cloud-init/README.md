@@ -1,4 +1,6 @@
-# Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure
+# Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure, using Docker and Fleet
+
+<img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-overview.jpg"/>
 
 ## Getting a CoreOS cluster up and running on Azure
 
@@ -159,7 +161,7 @@ export FLEETCTL_TUNNEL=<cloud-service-name>.cloudapp.net:<ssh-port>
 
 ## Deploying an application in your cluster
 
-Many Enterprise Java developers are using the Spring Framework. I picked @joshlong's latest sample app, showcasing Spring Boot, a framework designed to build micro services, and Java 1.8, [Spring-doge](https://github.com/joshlong/spring-doge). It's a state of the art implementation of the [Doge meme](http://en.wikipedia.org/wiki/Doge_(meme) :-). You can watch Josh explain the [code behind Spring Doge on Youtube](https://www.youtube.com/watch?v=eCos5VTtZoI).
+Many Enterprise Java developers are using the Spring Framework. I picked @joshlong & @phillip_webb's latest sample app, showcasing Spring Boot, a framework designed to build micro services, and Java 1.8, [Spring-doge](https://github.com/joshlong/spring-doge). It's a state of the art implementation of the [Doge meme](http://en.wikipedia.org/wiki/Doge_(meme) :-). You can watch Josh explain the [code behind Spring Doge on Youtube](https://www.youtube.com/watch?v=eCos5VTtZoI).
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=eCos5VTtZoI
 " target="_blank"><img src="http://img.youtube.com/vi/eCos5VTtZoI/0.jpg"
