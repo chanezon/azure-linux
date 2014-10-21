@@ -168,9 +168,42 @@ alt="Josh on Spring-doge" width="240" height="180" border="10" /></a>
 Spring-doge uses a MongoDB Database as a backend. You can setup a MongoDB cluster in your CoreOS cluster. To keep the example simple, I'd suggest using a hosted MongoDB: you can have one small instance of MongoDB for free using the [MongoLabs Azure Add-on](http://azure.microsoft.com/en-us/gallery/store/mongolab/mongolab/). Signup there and copy your Mongo connection uri: mongodb://username:password@hotname:port/dbname
 
 @jamesdbloom built a convenient Docker container with Java 8 and Maven, jamesdbloom/docker-java8-maven.
-I just extended his container to checkout Spring-doge and run it, passing to it the MongoDB connection uri in environment variable MONGODB_URI. Here is the [Dockerfile for chanezon/spring-doge](../../../master/coreos/cloud-init/spring-doge/Dockerfile).
+I just extended his container to checkout Spring-doge, compile it, and run it, passing to it the MongoDB connection uri in environment variable MONGODB_URI. Here is the [Dockerfile for chanezon/spring-doge](../../../master/coreos/cloud-init/spring-doge/Dockerfile). I built that image at [chanezon/spring-doge](https://registry.hub.docker.com/u/chanezon/spring-doge/), but feel free to build and use your own.
 
-CoreOS has a nice documentation about how to use Fleet to deploy services. Based on that, we will submit a fleet unit file for [spring-doge-http@.service](../../../master/coreos/cloud-init/spring-doge/spring-doge-http@.service), then deploy n instances of this unit, where n is the size of your cluster.
+```shell
+FROM jamesdbloom/docker-java8-maven
+
+MAINTAINER Patrick Chanezon <patrick@chanezon.com>
+
+EXPOSE 8080
+
+#checkout and build spring-doge
+WORKDIR /local/git
+RUN git clone https://github.com/joshlong/spring-doge.git
+WORKDIR /local/git/spring-doge
+RUN mvn package
+CMD java -Dserver.port=8080 -Dspring.data.mongodb.uri=$MONGODB_URI -jar spring-doge/target/spring-doge.jar
+```
+
+CoreOS has a nice documentation about how to use [Fleet to launch Docker containers](https://coreos.com/docs/launching-containers/launching/launching-containers-fleet/). Based on that, we will submit a fleet unit file for [spring-doge-http@.service](../../../master/coreos/cloud-init/spring-doge/spring-doge-http@.service), then deploy n instances of this unit, where n is the size of your cluster.
+
+Here is the Fleet unit template file. You need to replace the MONGODB_URI variable in it before submitting it.
+
+```shell
+[Unit]
+Description=spring-doge
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill spring-doge-%i
+ExecStartPre=-/usr/bin/docker rm spring-doge-%i
+ExecStart=/usr/bin/docker run --rm --name spring-doge-%i -e MONGODB_URI=mongodb://username:password@hotname:port/dbname -p 8080:8080 chanezon/spring-doge
+ExecStop=/usr/bin/docker stop spring-doge-%i
+
+[X-Fleet]
+Conflicts=spring-doge-http@*.service
+```
+
+And how to submit it to the cluster:
 
 ```shell
 fleetctl submit spring-doge-http@.service
