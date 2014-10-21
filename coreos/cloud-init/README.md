@@ -1,9 +1,12 @@
-# Getting a CoreOS cluster up and running on Azure
+# Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure
 
-This documentation is subject to change. It relies on the current development image of CoreOS for Azure from @dcrawford. In this image, he fixed most of the issues from previous image: cloud-init file is base64 decoded, and picked up by coreos. $private_ipv4 variables are interpolated.
+## Getting a CoreOS cluster up and running on Azure
 
-## Create the VM image in your subscription
+@timfpark [has a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB.
 
+### Create a CoreOS VM image in your storage account
+
+First you need to pick a region for your cluster. Here we will use "West US"
 Use image at http://alpha.release.core-os.net/amd64-usr/469.0.0/coreos_production_azure_image.vhd.bz2. First create an image in your subscription based on this blob (actually this is a bz2 compressed image, so you'll need to download it on a vm, uncompress it, and upload it to your storage account. Very soon there will be a public vhd image in the gallery to pull from).
 
 ```shell
@@ -11,15 +14,13 @@ azure vm disk upload --verbose https://coreos.blob.core.windows.net/public/prod-
 azure vm image create coreos-test-3 --location "West US" --blob-url http://<your-storage-account>.blob.core.windows.net/<your-container>/prod-test-3.vhd --os linux
 ```
 
-## Create a virtual network in Azure.
+### Create your cloud-init config file
 
-Use the portal, or commandline.
+Modify cloud-init.yml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example [https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/cloud-init.yml](cloud-init.yml) file. Then create the VMs. These commands create ssh endpoints for easier debugging.
 
-## Create your cloud-init config file
+A common mistake is to reuse discovery urls from previous cluster: think about creating a new one when creating a new cluster.
 
-modify cloud-init.yaml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example [cloud-init.yml](cloud-init.yml) file. Then create the VMs. These commands create ssh endpoints for easier debugging.
-
-## A note on ssh keys
+### A note on ssh keys
 
 If you follow the [Azure documentation to create your ssh keys](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/), using openssl, you will end up with a ~/.ssh/my_private_key.key and ~/.ssh/my_public_key.pem files. openssh understands the private key format from openssl, but the [public key format for openssl and openssh are different](http://security.stackexchange.com/questions/32768/converting-keys-between-openssl-and-openssh). When you provision a VM, Azure will do the conversion for you and place the ssh public key in yourusername/.ssh/authorized_keys. You need that public ssh key in the ssh format in your cloud-init.yml.
 In order to generate the public key in openssh format from your openssl cert, you need to use ssh-keygen on your private key.
@@ -31,10 +32,11 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOC4ZPy3a+F/DRQefLG/IteM00PYpJlc4Mga7S2mLv
 Use that as the value for the ssh_authorized_keys: entry in your cloud-init file.
 What this will do is that it will add this key in authorized_keys for user core, in /home/core/.ssh/authorized_keys.
 
-## Create the CoreOS VMs for your cluster
+### Create several CoreOS VMs for your cluster
 
+Create one cloud-init yml file for each VM you want to create, then create he VMs using the follwing command:
 ```shell
-azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh>.pem <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data ~/<cloud-init-file>.yml
+azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh> <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data <cloud-init-file.yml>
 ```
 
 Then check your cluster:
@@ -57,7 +59,7 @@ azure vm endpoint create <hostname> 4001 4001
 
 Have fun with CoreOS on Azure!
 
-## Configuring a remote fleet client
+### Configuring a remote fleet client
 
 If you want to manage your cluster with fleet from a remote client, on a Mac, you need to build fleetctl on Mac.
 
@@ -76,3 +78,106 @@ MACHINE IP METADATA
 415162a4... 10.0.0.5 region=us-west
 7c7f60e0... 10.0.0.4 region=us-west
 ```
+
+Now you can start using fleet from your dev machine to manage services on your cluster.
+
+### A more production-like cluster
+
+#### Affinity group, cloud service, vnet
+
+In the previous example, each VM is in its own cloud service, and has ssh port 22 open. This makes it convenient for testing, but one you deploy an application, you want to use Azure for load balancing. A more typical deployment would have one cloud service per tier, or cluster, using an Azure load balanced set to load balance between instances. Also, you want to use an affinity group to deploy your VMs.
+
+We start by creating an affinity group, then a cloud service in that affinity group, and a vnet. Here I create a subnet for frontend roles. Later, this leaves me an option to add a different subnet for backend roles.
+```shell
+azure account affinity-group create <affinity-group-name> -l "West US" -e "My App Name"
+azure service create --affinitygroup <affinity-group-name> <cloud-service-name>
+azure network vnet create <vnet-name> \
+--affinity-group "<affinity-group-name>" \
+--address-space 192.168.0.0 \
+--cidr 16 \
+--subnet-name "frontend" \
+--subnet-start-ip 192.168.0.4 \
+--subnet-vm-count 256
+```
+
+#### Creating VMs
+
+Create the first VM in the vnet. Typically you would have an index i for your VM names, like my-vm-1. And increment that index as you add more machines. This time we specify a port for ssh, here 22001. This will automatically create an endpoint for that VM opening ssh on that port. Since all VMs are hidden behind the same cloud service, it is important to assign different ssh ports to each VM. Here I use ops for the CoreOS username, and specify the --no-ssh-password option so that we can only login with our private key. <vm-name> is what you would use for fields name and hostname in cloud-init.yml. Specify a string as the name of the availability set you want to create.
+
+```shell
+azure vm create \
+<cloud-service-name> \
+<image-name> \
+ops \
+--vm-size Small \
+--vm-name <vm-name> \
+--availability-set <as-name> \
+--ssh <ssh-port> \
+--ssh-cert <Your pem file for ssh> \
+--no-ssh-password \
+--virtual-network-name <vnet-name> \
+--subnet-names frontend \
+--custom-data <cloud-init-file.yml>
+```
+
+Then for each subsequent VMs you want to add to the cluster, you need to add the --connect option, to connect the new VM to the existing ones in the cloud service, use a different ssh port (typically incrementing by 1 for each machine), and specify a different VM name (typically incrementing a number). This should be easy to automate and script.
+```shell
+azure vm create \
+<cloud-service-name> \
+<image-name> \
+ops \
+--connect \
+--vm-size Small \
+--vm-name <vm-name-i+1> \
+--availability-set <as-name> \
+--ssh <ssh-port-+1> \
+--ssh-cert <Your pem file for ssh> \
+--no-ssh-password \
+--virtual-network-name <vnet-name> \
+--subnet-names frontend \
+--custom-data <cloud-init-file-i+1.yml>
+```
+### Creating load balanced endpoints for the service
+
+All VMs will run a service that we want to load balance. Here I will use a java service that runs on port 8080 on each machine. In order to let Azure load balance these services, I create a load balance set called http for each VM, on port 80, directing to 8080 on each VM.
+For each machine indexed i:
+```shell
+azure vm endpoint --lb-set-name http create <vm-name-i> 80 8080
+```
+
+### Checking the cluster
+
+Same as previously,
+```shell
+ssh-add ~/.ssh/my_private_key.key
+fleetctl --tunnel <cloud-service-name>.cloudapp.net:<ssh-port> list-machines
+```
+Here, you can use any of the ssh ports you have setup when creating VMs. A convenient way to work with fleetctl is to set FLEETCTL_TUNNEL in your ~/.bashrc.
+```shell
+export FLEETCTL_TUNNEL=<cloud-service-name>.cloudapp.net:<ssh-port>
+```
+
+## Deploying an application in your cluster
+
+Many Enterprise Java developers are using the Spring Framework. I picked @joshlong's latest sample app, showcasing Spring Boot, a framework designed to build micro services, and Java 1.8, [Spring-doge](https://github.com/joshlong/spring-doge). It's a state of the art implementation of the [Doge meme](http://en.wikipedia.org/wiki/Doge_(meme) :-). You can watch Josh explain the [code behind Spring Doge on Youtube](https://www.youtube.com/watch?v=eCos5VTtZoI).
+
+Spring-doge uses a MongoDB Database as a backend. You can setup a MongoDB cluster in your CoreOS cluster. To keep the example simple, I'd suggest using a hosted MongoDB: you can have one small instance of MongoDB for free using the [MongoLabs Azure Add-on](http://azure.microsoft.com/en-us/gallery/store/mongolab/mongolab/). Signup there and copy your Mongo connection uri: mongodb://username:password@hotname:port/dbname
+
+@jamesdbloom built a convenient Docker container with Java 8 and Maven, jamesdbloom/docker-java8-maven.
+I just extended his container to checkout Spring-doge and run it, passing to it the MongoDB connection uri in environment variable MONGODB_URI. Here is the [Dockerfile for chanezon/spring-doge](https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/spring-doge/Dockerfile).
+
+CoreOS has a nice documentation about how to use Fleet to deploy services. Based on that, we will submit a fleet unit file for [spring-doge-http@.service](https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/spring-doge/spring-doge-http@.service), then deploy n instances of this unit, where n is the size of your cluster.
+
+```shell
+fleetctl submit spring-doge-http@.service
+fleetctl list-unit-files
+fleetctl start spring-doge-http@{1..2}.service
+fleetctl list-units
+UNIT MACHINE ACTIVE SUB
+spring-doge-http@1.service 415162a4.../10.0.0.5 active running
+spring-doge-http@2.service 7c7f60e0.../10.0.0.4 active running
+```
+
+In a browser navigate to http://<cloud-service-name>.cloudapp.net/, and have fun with Spring-doge!
+Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
+<img src="../../../blob/master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
