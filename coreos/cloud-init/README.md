@@ -209,7 +209,7 @@ spring-doge-http@1.service 415162a4.../10.0.0.5 active running
 spring-doge-http@2.service 7c7f60e0.../10.0.0.4 active running
 ```
 
-In a browser navigate to http://<cloud-service-name>.cloudapp.net/, and have fun with Spring-doge!
+In a browser navigate to http://cloud-service-name.cloudapp.net/, and have fun with Spring-doge!
 
 Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
 
