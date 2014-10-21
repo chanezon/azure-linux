@@ -164,9 +164,9 @@ Many Enterprise Java developers are using the Spring Framework. I picked @joshlo
 Spring-doge uses a MongoDB Database as a backend. You can setup a MongoDB cluster in your CoreOS cluster. To keep the example simple, I'd suggest using a hosted MongoDB: you can have one small instance of MongoDB for free using the [MongoLabs Azure Add-on](http://azure.microsoft.com/en-us/gallery/store/mongolab/mongolab/). Signup there and copy your Mongo connection uri: mongodb://username:password@hotname:port/dbname
 
 @jamesdbloom built a convenient Docker container with Java 8 and Maven, jamesdbloom/docker-java8-maven.
-I just extended his container to checkout Spring-doge and run it, passing to it the MongoDB connection uri in environment variable MONGODB_URI. Here is the [Dockerfile for chanezon/spring-doge](https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/spring-doge/Dockerfile).
+I just extended his container to checkout Spring-doge and run it, passing to it the MongoDB connection uri in environment variable MONGODB_URI. Here is the [Dockerfile for chanezon/spring-doge](../../../master/coreos/cloud-init/spring-doge/Dockerfile).
 
-CoreOS has a nice documentation about how to use Fleet to deploy services. Based on that, we will submit a fleet unit file for [spring-doge-http@.service](https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/spring-doge/spring-doge-http@.service), then deploy n instances of this unit, where n is the size of your cluster.
+CoreOS has a nice documentation about how to use Fleet to deploy services. Based on that, we will submit a fleet unit file for [spring-doge-http@.service](../../../master/coreos/cloud-init/spring-doge/spring-doge-http@.service), then deploy n instances of this unit, where n is the size of your cluster.
 
 ```shell
 fleetctl submit spring-doge-http@.service
@@ -180,4 +180,4 @@ spring-doge-http@2.service 7c7f60e0.../10.0.0.4 active running
 
 In a browser navigate to http://<cloud-service-name>.cloudapp.net/, and have fun with Spring-doge!
 Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
-<img src="../../../blob/master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
+<img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
