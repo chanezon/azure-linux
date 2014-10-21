@@ -4,17 +4,8 @@
 
 ## Getting a CoreOS cluster up and running on Azure
 
-@timfpark [has a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB.
-
-### Create a CoreOS VM image in your storage account
-
-First you need to pick a region for your cluster. Here we will use "West US"
-Use image at http://alpha.release.core-os.net/amd64-usr/469.0.0/coreos_production_azure_image.vhd.bz2. First create an image in your subscription based on this blob (actually this is a bz2 compressed image, so you'll need to download it on a vm, uncompress it, and upload it to your storage account. Very soon there will be a public vhd image in the gallery to pull from).
-
-```shell
-azure vm disk upload --verbose https://coreostest.blob.core.windows.net/coreos/coreos_production_azure_image.vhd http://<your-storage-account>.blob.core.windows.net/<your-container>/coreos.vhd  <your storage key>
-azure vm image create coreos-image --location "West US" --blob-url http://<your-storage-account>.blob.core.windows.net/<your-container>/coreos.vhd --os linux
-```
+CoreOS for Azure was released today. The CoreOS website  [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) is a good start.
+@timfpark also wrote [a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB.
 
 ### Create your cloud-init config file
 
@@ -36,7 +27,7 @@ What this will do is that it will add this key in authorized_keys for user core,
 
 ### Create several CoreOS VMs for your cluster
 
-Create one cloud-init yml file for each VM you want to create, then create he VMs using the follwing command:
+Create one cloud-init yml file for each VM you want to create. For now the only CoreOS image available is in the alpha channel: 2b171e93f07c4903bcad35bda10acf22__CoreOS-Alpha-475.1.0. Check [CoreOS on Azure documentation](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for different options as they appear. Create he VMs using the following command:
 ```shell
 azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh> <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data <cloud-init-file.yml>
 ```
