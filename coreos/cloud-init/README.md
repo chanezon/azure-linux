@@ -27,7 +27,7 @@ What this will do is that it will add this key in authorized_keys for user core,
 
 ### Create several CoreOS VMs for your cluster
 
-Create one cloud-init yml file for each VM you want to create. For now the only CoreOS image available is in the alpha channel: 2b171e93f07c4903bcad35bda10acf22__CoreOS-Alpha-475.1.0. Check [CoreOS on Azure documentation](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for different options as they appear. Create he VMs using the following command:
+Create one cloud-init yml file for each VM you want to create. For now the only CoreOS image available is in the alpha channel: 2b171e93f07c4903bcad35bda10acf22__CoreOS-Alpha-475.1.0. What's really cool about this is that this comes with Docker 1.3, fresh from last week. Check [CoreOS on Azure documentation](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for different options as they appear. Create he VMs using the following command:
 ```shell
 azure vm create -l "West US" --ssh --ssh-cert ~/.ssh/<Your pem file for ssh> <hostname> <imagename>  --virtual-network-name <virtual network name> username password --custom-data <cloud-init-file.yml>
 ```
@@ -105,6 +105,7 @@ ops \
 --vm-size Small \
 --vm-name <vm-name> \
 --availability-set <as-name> \
+--affinity-group <affinity-group-name> \
 --ssh <ssh-port> \
 --ssh-cert <Your pem file for ssh> \
 --no-ssh-password \
