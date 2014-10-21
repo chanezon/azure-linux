@@ -214,3 +214,11 @@ In a browser navigate to http://<cloud-service-name>.cloudapp.net/, and have fun
 Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
 
 <img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
+
+## FAQ
+
+I will document here answers to common questions:
+
+### How do I connect from Docker cli on my dev machine to the Docker daemon on my CoreOS instance?
+
+By default CoreOS is configured to have Docker listen only locally, so that you're supposed to use Fleet to manage your Docker containers. If you want to manage your containers directly, using Docker cli or Fig, you need to [customize your instance's Docker daemon settings](https://coreos.com/docs/launching-containers/building/customizing-docker/). From an Azure perspective, you need to think about opening an enpoint for the port you just opened, so that it's accessible from the outside.
