@@ -5,7 +5,7 @@
 ## Getting a CoreOS cluster up and running on Azure
 
 CoreOS for Azure was [released today](http://azure.microsoft.com/blog/2014/10/20/azures-getting-bigger-faster-and-more-open/). The CoreOS website documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) is a good start.
-@timfpark also wrote [a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB.
+@timfpark also wrote [a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB. CoreOS documentation includes a nice overview of [CoreOS Cluster Architectures](https://coreos.com/docs/cluster-management/setup/cluster-architectures/), describing various cluster sizes. This tutorial explains how to provision a small CoreOS cluster in Azure. I will add documentation to create the other topologies later, but these instructions should give you enough knowledge to create them by yourself.
 
 ### Create your cloud-init config file
 
@@ -219,6 +219,7 @@ Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/
 
 There are a few things I want to add to this tutorial in next few week:
 * My first idea was to automate all that provisioning in a tool (generate the cloud-init files from a template). Instead of writing it, I looked around and found  [@kenperkins's coreos-cluster-cli](https://github.com/kenperkins/coreos-cluster-cli) to add azure support in it. It works on Rackspace. If it's extensible enough, I'll probably contribute to it instead of rolling my own tool.
+* document a scalable architecture such as described in [CoreOS Cluster Architectures](https://coreos.com/docs/cluster-management/setup/cluster-architectures/)
 * Deploying a replicated mongodb service in the cluster
 * Describing how to configure docker to be able to connect to it remotely
 
