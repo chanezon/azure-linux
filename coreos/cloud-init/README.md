@@ -215,6 +215,13 @@ Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/
 
 <img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
 
+## Future work
+
+There are a few things I want to add to this tutorial in next few week:
+* My first idea was to automate all that provisioning in a tool (generate the cloud-init files from a template). Instead of writing it, I looked around and found  [@kenperkins's coreos-cluster-cli](https://github.com/kenperkins/coreos-cluster-cli) to add azure support in it. It works on Rackspace. If it's extensible enough, I'll probably contribute to it instead of rolling my own tool.
+* Deploying a replicated mongodb service in the cluster
+* Describing how to configure docker to be able to connect to it remotely
+
 ## FAQ
 
 I will document here answers to common questions:
