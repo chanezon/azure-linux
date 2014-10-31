@@ -109,6 +109,45 @@ For now, [please do that in the portal](http://azure.microsoft.com/en-us/documen
 
 <img src="../../../master/coreos/cloud-init/vnet/vnet-3.png"/>
 
+There is a workaround to create your vnet using the x-platform cli: use the option to export all your network config in a json file, add your new subnet config in the file, and import it.
+```shell
+azure network export net-config.json
+```
+Generates a file like this:
+```json
+{
+	"VirtualNetworkConfiguration": {
+		"Dns": "",
+		"VirtualNetworkSites": [{
+			"AddressSpace": ["192.168.0.0/20"],
+			"Subnets": [{
+				"AddressPrefix": "192.168.0.0/23",
+				"Name": "Subnet-1"
+			}],
+			"Name": "pat-coreos-13-network",
+			"Location": "West US"
+		},
+		... more vnets
+			}]
+	}
+}
+```
+Make a copy called net-config-new.json, and add your vnet config in there. The section you add looks like this:
+```json
+    {
+			"AddressSpace": ["192.168.0.0/16"],
+			"Subnets": [{
+				"AddressPrefix": "192.168.0.4/24",
+				"Name": "frontend"
+			}],
+			"Name": "pat-spring-doge-net-15",
+			"Location": "West US"
+		}		
+```
+Then import the whole thing.
+```shell
+azure network import net-config-new.json
+```
 
 #### Creating VMs
 
