@@ -103,11 +103,11 @@ azure network vnet create <vnet-name> \
 
 For now, [please do that in the portal](http://azure.microsoft.com/en-us/documentation/articles/create-virtual-network/). Screenshots below.
 
-<img src="../../../master/coreos/cloud-init/vnet/vnet-1.jpg"/>
+<img src="../../../master/coreos/cloud-init/vnet/vnet-1.png"/>
 
-<img src="../../../master/coreos/cloud-init/vnet/vnet-2.jpg"/>
+<img src="../../../master/coreos/cloud-init/vnet/vnet-2.png"/>
 
-<img src="../../../master/coreos/cloud-init/vnet/vnet-3.jpg"/>
+<img src="../../../master/coreos/cloud-init/vnet/vnet-3.png"/>
 
 
 #### Creating VMs
