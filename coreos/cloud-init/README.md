@@ -82,16 +82,18 @@ Now you can start using fleet from your dev machine to manage services on your c
 
 ### A more production-like cluster
 
-#### Affinity group, cloud service, vnet
+#### cloud service, vnet
 
-In the previous example, each VM is in its own cloud service, and has ssh port 22 open. This makes it convenient for testing, but one you deploy an application, you want to use Azure for load balancing. A more typical deployment would have one cloud service per tier, or cluster, using an Azure load balanced set to load balance between instances. Also, you want to use an affinity group to deploy your VMs.
+In the previous example, each VM is in its own cloud service, and has ssh port 22 open. This makes it convenient for testing, but one you deploy an application, you want to use Azure for load balancing. A more typical deployment would have one cloud service per tier, or cluster, using an Azure load balanced set to load balance between instances. The initial version of this documentation recommended to deploy your VMs in an affinity group. Since then, I discovered [@mknz](https://twitter.com/mknz)'s excellent [post on why affinity groups in Azure are not useful anymore](http://convective.wordpress.com/2014/07/11/affinity-groups-in-azure/). Don't use an affinity groups. The Azure documentation on [About Regional VNets and Affinity Groups for Virtual Network](http://msdn.microsoft.com/en-us/library/azure/jj156085.aspx) is also relevant. However, the Azure Cross Platform CLI has [a still open bug that does not let you create a regional VNet without an affinity group](https://github.com/Azure/azure-sdk-tools-xplat/issues/1255). The current behavior of the CLI is to fetch your existing affinity groups for the region, and use the first one, or create a new one. So you have 3 choices: create a regional VNet in the portal (good), use the CLI and specify an affinity group (suboptimal), or don't use a subnet for your cloud service (ok if you run only one type of service in the cloud service). In this tutorial I recommend using the portal.
 
-We start by creating an affinity group, then a cloud service in that affinity group, and a vnet. Here I create a subnet for frontend roles. Later, this leaves me an option to add a different subnet for backend roles.
+We start by creating a cloud service.
 ```shell
-azure account affinity-group create <affinity-group-name> -l "West US" -e "My App Name"
-azure service create --affinitygroup <affinity-group-name> <cloud-service-name>
+azure service create --location "West US" <cloud-service-name>
+```
+When [issue 1255](https://github.com/Azure/azure-sdk-tools-xplat/issues/1255) is fixed, you will be able to create a vnet and subnet using this command. Here I create a subnet for frontend roles. Later, this leaves me an option to add a different subnet for backend roles.
+```shell
 azure network vnet create <vnet-name> \
---affinity-group "<affinity-group-name>" \
+--location "West US" \
 --address-space 192.168.0.0 \
 --cidr 16 \
 --subnet-name "frontend" \
@@ -99,19 +101,28 @@ azure network vnet create <vnet-name> \
 --subnet-vm-count 256
 ```
 
+For now, [please do that in the portal](http://azure.microsoft.com/en-us/documentation/articles/create-virtual-network/). Screenshots below.
+
+<img src="../../../master/coreos/cloud-init/vnet/vnet-1.jpg"/>
+
+<img src="../../../master/coreos/cloud-init/vnet/vnet-2.jpg"/>
+
+<img src="../../../master/coreos/cloud-init/vnet/vnet-3.jpg"/>
+
+
 #### Creating VMs
 
-Create the first VM in the vnet. Typically you would have an index i for your VM names, like my-vm-1. And increment that index as you add more machines. This time we specify a port for ssh, here 22001. This will automatically create an endpoint for that VM opening ssh on that port. Since all VMs are hidden behind the same cloud service, it is important to assign different ssh ports to each VM. Here I use ops for the CoreOS username, and specify the --no-ssh-password option so that we can only login with our private key. <vm-name> is what you would use for fields name and hostname in cloud-init.yml. Specify a string as the name of the availability set you want to create.
+Create the first VM in the vnet. Typically you would have an index i for your VM names, like my-vm-1. And increment that index as you add more machines. This time we specify a port for ssh, here 22001. This will automatically create an endpoint for that VM opening ssh on that port. Since all VMs are hidden behind the same cloud service, it is important to assign different ssh ports to each VM. Here I use core for username, the default CoreOS admin username, and specify the --no-ssh-password option so that we can only login with our private key. <vm-name> is what you would use for fields name and hostname in cloud-init.yml. Specify a string as the name of the availability set you want to create.
 
 ```shell
 azure vm create \
 <cloud-service-name> \
 <image-name> \
-ops \
+core \
 --vm-size Small \
 --vm-name <vm-name> \
 --availability-set <as-name> \
---affinity-group <affinity-group-name> \
+--location "West US" \
 --ssh <ssh-port> \
 --ssh-cert <Your pem file for ssh> \
 --no-ssh-password \
@@ -125,11 +136,12 @@ Then for each subsequent VMs you want to add to the cluster, you need to add the
 azure vm create \
 <cloud-service-name> \
 <image-name> \
-ops \
+core \
 --connect \
 --vm-size Small \
 --vm-name <vm-name-i+1> \
 --availability-set <as-name> \
+--location "West US" \
 --ssh <ssh-port-+1> \
 --ssh-cert <Your pem file for ssh> \
 --no-ssh-password \
