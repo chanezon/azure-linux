@@ -1,0 +1,11 @@
+[Unit]
+Description=eureka
+
+[Service]
+ExecStartPre=-/usr/bin/docker kill eureka-%i
+ExecStartPre=-/usr/bin/docker rm eureka-%i
+ExecStart=/usr/bin/docker run --name eureka-%i -p 8081:8080 netflixoss/eureka:1.1.142
+ExecStop=/usr/bin/docker stop eureka-%i
+
+[X-Fleet]
+Conflicts=eureka-http@*.service
