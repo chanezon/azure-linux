@@ -170,7 +170,7 @@ core \
 --custom-data <cloud-init-file.yml>
 ```
 
-Then for each subsequent VMs you want to add to the cluster, you need to add the --connect option, to connect the new VM to the existing ones in the cloud service, use a different ssh port (typically incrementing by 1 for each machine), and specify a different VM name (typically incrementing a number). This should be easy to automate and script.
+Then for each subsequent VMs you want to add to the cluster, you need to add the --connect option, to connect the new VM to the existing ones in the cloud service, use a different ssh port (typically incrementing by 1 for each machine), and specify a different VM name (typically incrementing a number). This should be easy to automate and script. You need to create at least 3 VMs in your cluster, this is necessary for the Raft protocol used by etcd.
 ```shell
 azure vm create \
 <cloud-service-name> \
@@ -259,7 +259,7 @@ And how to submit it to the cluster:
 ```shell
 fleetctl submit spring-doge-http@.service
 fleetctl list-unit-files
-fleetctl start spring-doge-http@{1..2}.service
+fleetctl start spring-doge-http@{1..3}.service
 fleetctl list-units
 UNIT MACHINE ACTIVE SUB
 spring-doge-http@1.service 415162a4.../10.0.0.5 active running
@@ -268,7 +268,7 @@ spring-doge-http@2.service 7c7f60e0.../10.0.0.4 active running
 
 In a browser navigate to http://cloud-service-name.cloudapp.net/, and have fun with Spring-doge!
 
-Here's one of my [deployed version of it](http://pat-spring-doge-1.cloudapp.net/).
+Here's one of my [deployed version of it](http://pat-spring-doge-2.cloudapp.net/).
 
 <img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-simon.png"/>
 
@@ -279,6 +279,35 @@ There are a few things I want to add to this tutorial in next few week:
 * document a scalable architecture such as described in [CoreOS Cluster Architectures](https://coreos.com/docs/cluster-management/setup/cluster-architectures/)
 * Deploying a replicated mongodb service in the cluster
 * Describing how to configure docker to be able to connect to it remotely
+
+## Another example: Netflix Eureka
+
+@NetflixOSS [recently released Docker containers for many of their stack's components](http://techblog.netflix.com/2014/11/zerotodocker-easy-way-to-evaluate.html), with the [ZeroToDocker project](https://github.com/Netflix-Skunkworks/zerotodocker/wiki/Running-the-Images). This makes it very easy to get started playing with them.
+
+I created an [example fleet service definition](../../../master/coreos/cloud-init/netflix-eureka/eureka-http@.service) for the Netflix [Eureka service registry](https://github.com/Netflix/eureka) server. Note that the Netflix instructions tell you to start the Docker container in detached mode: you have to remove that option, since [containers started in this mode don't work with Fleet](https://coreos.com/docs/launching-containers/launching/launching-containers-fleet/). I map container port to 8081 on the host, since 8080 is already taken by spring-doge. This will allow us to deploy this service alogside spring-doge.
+
+```shell
+fleetctl submit netflix-eureka-http@.service
+fleetctl list-unit-files
+fleetctl start netflix-eureka-http@{1..3}.service
+fleetctl list-units
+UNIT MACHINE ACTIVE SUB
+UNIT				MACHINE			ACTIVE	SUB
+eureka-http@1.service		4830c4b8.../192.168.0.5	active	running
+eureka-http@2.service		701e7304.../192.168.0.6	active	running
+eureka-http@3.service		d00a6b6f.../192.168.0.4	active	running
+spring-doge-http@1.service	4830c4b8.../192.168.0.5	active	running
+spring-doge-http@2.service	701e7304.../192.168.0.6	active	running
+spring-doge-http@3.service	d00a6b6f.../192.168.0.4	active	running
+```
+Then create a load balanced endpoint for each azure VM.
+
+```shell
+azure vm endpoint --lb-set-name eureka create <vm-name-i> 8080 8081
+```
+In a browser navigate to http://cloud-service-name.cloudapp.net:8080/eureka/, and have fun with Eureka!
+
+<img src="../../../master/coreos/cloud-init/netflix-eureka/netflix-eureka.png"/>
 
 ## FAQ
 
