@@ -1,5 +1,6 @@
-# Azure-linux
-=============
+# P@'s Linux on Azure tutorials
+
+<img src="/img/Microsoft-Loves-Linux.png"/>
 
 Documentation and examples for how to leverage various linux technologies with Microsoft Azure.
 
