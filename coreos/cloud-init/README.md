@@ -1,5 +1,7 @@
 # Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure, using Docker and Fleet
 
+This tutorial is part of [P@'s Linux on Azure series](/../../).
+
 <img src="../../../master/coreos/cloud-init/spring-doge/spring-doge-overview.jpg"/>
 
 ## Getting a CoreOS cluster up and running on Azure
