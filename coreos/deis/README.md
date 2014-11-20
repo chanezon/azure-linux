@@ -23,9 +23,9 @@ When creating your VMs, you want to use the [special cloud-init file provided by
 Deis provides its own routing service, and is tied to dns configuration for a domain you own. This means you will need to configure your dns to leverage fixed IP addresses for these VMs. Azure recently introduced a preview for Instance level IP addresses, we'll use that. It's configurable only through Powershell or the new Portal right now. I'll use the portal.
 Once your VMs are provisioned, navigate to the portal, get to the IP Addresses box, and set the Instance IP toggle to On. After a few seconds, your Instance IP will appear, copy it in a text file. repeat and rinse for each VM.
 
-<img src="/../../img/portal-instance-ip-before.png"/>
+<img src="/../../blob/master/img/portal-instance-ip-before.png"/>
 
-<img src="/../../img/portal-instance-ip-after.png"/>
+<img src="/../../blob/master/img/portal-instance-ip-after.png"/>
 
 At this stage, you should have a CoreOS cluster up and running, test it with fleetctl.
 
