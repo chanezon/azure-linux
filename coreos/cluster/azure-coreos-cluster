@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+from azure import *
+import argparse
+
+parser = argparse.ArgumentParser(description='Create a CoreOS cluster on Microsoft Azure.')
+parser.add_argument('--version', action='version', version='azure-coreos-cluster 0.1')
+parser.add_argument('cloud_service_name',
+                   help='cloud service name')
+parser.add_argument('--ssh-cert', required=True,
+                   help='required pem file with public key for ssh')
+parser.add_argument('--subscription', required=True,
+                   help='required Azure subscription id')
+parser.add_argument('--azure-cert', required=True,
+                   help='required path to Azure cert pem file')
+parser.add_argument('--vm-size', default='Small',
+                   help='optional, VM size [Small]')
+parser.add_argument('--vm-name-prefix', default='coreos',
+                   help='optional, VM name prefix [coreos]')
+parser.add_argument('--availability-set', default='coreos-as',
+                   help='optional, name of availability set for cluster [coreos-as]')
+parser.add_argument('--location', default='West US',
+                   help='optional, [West US]')
+parser.add_argument('--ssh', default=22001, type=int,
+                   help='optional, starts with 22001 and +1 for each machine in cluster')
+parser.add_argument('--coreos-image', default='2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0',
+                   help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0]')
+parser.add_argument('--num-nodes', default=3, type=int,
+                   help='optional, number of nodes to create (or add), defaults to 3')
+
+args = parser.parse_args()
+print args.cloud_service_name
+print args.ssh_cert
+print args.subscription
+print args.vm_size
+print args.vm_name_prefix
+print args.availability_set
+print args.location
+print args.ssh
+print args.coreos_image
+print args.num_nodes
