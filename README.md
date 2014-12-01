@@ -12,6 +12,7 @@ I write tutorials with a bit of automation code about things I didn't see docume
 
 * [Installing a CoreOS cluster on Azure](/coreos/cloud-init/README.md) Docker orchestration with Fleet. Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure, using Docker and Fleet. Deploying @NetflixOSS containers.
 * [Installing Deis on a CoreOS cluster on Azure](/coreos/deis/README.md) Docker orchestration with Deis. Fun and games with DNS settings, then deploy a ruby app with git, and a Docker image for a Java 8 app.
+* [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md) Python script to deploy a CoreOS cluster in one shot.
 * [Installing Kubernetes on a CoreOS cluster on Azure](/coreos/kubernetes/README.md) (Work in Progress), Docker orchestration with Kubernetes. Cf links below for 2 approaches to networking that need testing on Azure: Weave and Flannel.
 
 ### Interesting links

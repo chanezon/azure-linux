@@ -15,6 +15,10 @@ CoreOS for Azure was [released on 10.20.2014](http://azure.microsoft.com/blog/20
 
 <img src="https://coreos.com/docs/cluster-management/setup/cluster-architectures/prod.png"/>
 
+### Automated provisioning script
+
+The instructions below go into details on how to provision a CoreOS cluster manually using the Azure Cross Platform CLI, and tell you about all the configuration parameters. I automated all that in a Python script that lets you provision a cluster in one shot: [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). You may want to use that instead of the manual approach.
+
 ### Create your cloud-init config file
 
 Modify cloud-init.yml with https://discovery.etcd.io/new discovery url, ssh key, name and hostname for each of the hosts you want to create. Here is an example [https://github.com/chanezon/azure-linux/blob/master/coreos/cloud-init/cloud-init.yml](cloud-init.yml) file. Then create the VMs. These commands create ssh endpoints for easier debugging.
@@ -144,7 +148,7 @@ Make a copy called net-config-new.json, and add your vnet config in there. The s
 			}],
 			"Name": "pat-spring-doge-net-15",
 			"Location": "West US"
-		}		
+		}
 ```
 Then import the whole thing.
 ```shell

@@ -10,6 +10,19 @@ This tutorial explains how to install Deis on Azure, expanding on the [Installin
 
 [Get Deis](http://deis.io/get-deis/) docs has detailed instructions for how to deploy Deis on several clouds, but not for Azure yet. The process is quite similar as the regular deployment of a CoreOS cluster on Azure, with 3 differences: VM sizes, cloud-init config file, IP addresses.
 
+You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, you will use the --pip --custom-data options.
+
+```
+./azure-coreos-cluster pat-coreos-cloud-service \
+--ssh-cert ~/.ssh/cert-with-ssh-public-key.cer \
+--subscription 9b5910a1-8e79d5ea2841 \
+--azure-cert ~/.azure/9b5910a1-8e79d5ea2841.pem \
+--ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/ \
+--pip \
+--custom-data deis-cloud-init.yml
+```
+
 ### VM Size
 
 [Deis system requirements docs](http://docs.deis.io/en/latest/installing_deis/system-requirements/) recommends 4Gb of RAM and 40Gb disk space for VMs. This means you may want to use an A2/Medium size VM for your deployment (see [Azure VM sizes](http://msdn.microsoft.com/en-us/library/azure/dn197896.aspx)), instead of a Small. That said, for testing it, I successfully deployed my cluster on a Small, but it was very slow. In terms of number of machines, deis recommends 3, 5 or more. The one I created with 3 machines worked, but you may want to extend it to 5 for real apps.
@@ -249,9 +262,3 @@ deis apps:open
 ## Conclusion
 
 Have fun with Deis on Azure. The orchestration platform still feels a bit rough around the edge, with a few bugs, lacks of functionalities and sparse documentation, but it seems to be in active development, and while the setup takes some time, the developer workflow is very nice.
-
-
-
-
-
-

@@ -79,17 +79,23 @@ print args.subnet_names
 print args.discovery_service_url
 print args.pip
 
-if args.discovery_service_url:
-    cloud_init = cloud_init_template.format(args.discovery_service_url)
+if args.custom_data:
+    with open(args.custom_data, 'r') as f:
+        cloud_init = f.read()
+    f.closed
 else:
-    response = urllib2.urlopen('https://discovery.etcd.io/new')
-    discovery_url = response.read()
-    cloud_init = cloud_init_template.format(discovery_url)
+    if args.discovery_service_url:
+        cloud_init = cloud_init_template.format(args.discovery_service_url)
+    else:
+        response = urllib2.urlopen('https://discovery.etcd.io/new')
+        discovery_url = response.read()
+        cloud_init = cloud_init_template.format(discovery_url)
 
 SERVICE_CERT_FORMAT = 'pfx'
 
 with open(args.ssh_cert) as f:
     service_cert_file_data = base64.b64encode(f.read())
+f.closed
 
 def wait_for_async(request_id, operation_name, timeout):
     count = 0
