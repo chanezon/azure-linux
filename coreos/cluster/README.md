@@ -48,27 +48,69 @@ use --num-nodes 5 option to bump it to create 5 instances instead of the default
 ## Usage
 
 ```
-Usage: azure-coreos-cluster [options] <cloud-service-name>
+./azure-coreos-cluster -h
+usage: azure-coreos-cluster [-h] [--version] --ssh-cert SSH_CERT --ssh-thumb
+SSH_THUMB --subscription SUBSCRIPTION --azure-cert
+AZURE_CERT --blob-container-url BLOB_CONTAINER_URL
+[--vm-size VM_SIZE]
+[--vm-name-prefix VM_NAME_PREFIX]
+[--availability-set AVAILABILITY_SET]
+[--location LOCATION] [--ssh SSH]
+[--coreos-image COREOS_IMAGE]
+[--num-nodes NUM_NODES]
+[--virtual-network-name VIRTUAL_NETWORK_NAME]
+[--subnet-names SUBNET_NAMES]
+[--custom-data CUSTOM_DATA]
+[--discovery-service-url DISCOVERY_SERVICE_URL]
+[--pip]
+cloud_service_name
 
-Options:
+Create a CoreOS cluster on Microsoft Azure.
 
--h, --help                              output usage information
--V, --version                           output the version number
---subscription                          required, Azure subscription id
---azure-cert <pem-file>                 required, path to Azure cert pem file
---ssh-cert <Your pem file for ssh>      required, pem file with public key for ssh
---vm-size <size>                        optional, VM size [Small]
---vm-name-prefix <prefix>               optional, VM name prefix [coreos]
---availability-set <name>               optional, name of availability set for cluster [coreos-as]
---location <location>                   optional, [West US]
---ssh <ssh-port-start>                  optional, starts with 22001 and +1 for each machine in cluster
---virtual-network-name <vnet-name>      optional, name of an existing virtual network we place the cluster VMs in
---subnet-names <list>                   optional, subnet name
---custom-data <cloud-init-file.yml>     optional, your own cloud-init file, by default we use a here document in the python script, and generate a new discovery token
---coreos-image <image>                  optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0]
---num-nodes <number>                    optional, number of nodes to create (or add), defaults to 3
---discovery-service-url <url>           optional, url for an existing cluster discovery service. Else we'll generate one.
---pip                                   optional, assigns public instance ip addresses to each VM
+positional arguments:
+cloud_service_name    cloud service name
+
+optional arguments:
+-h, --help            show this help message and exit
+--version             show program's version number and exit
+--ssh-cert SSH_CERT   required pfx certificate file with public key for ssh
+--ssh-thumb SSH_THUMB
+required thumbprint of ssh cert
+--subscription SUBSCRIPTION
+required Azure subscription id
+--azure-cert AZURE_CERT
+required path to Azure cert pem file
+--blob-container-url BLOB_CONTAINER_URL
+required url to blob container where vm disk images
+will be created, including /, ex:
+https://patcoreos.blob.core.windows.net/vhds/
+--vm-size VM_SIZE     optional, VM size [Small]
+--vm-name-prefix VM_NAME_PREFIX
+optional, VM name prefix [coreos]
+--availability-set AVAILABILITY_SET
+optional, name of availability set for cluster
+[coreos-as]
+--location LOCATION   optional, [West US]
+--ssh SSH             optional, starts with 22001 and +1 for each machine in
+cluster
+--coreos-image COREOS_IMAGE
+optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-
+Beta-494.1.0]
+--num-nodes NUM_NODES
+optional, number of nodes to create (or add), defaults
+to 3
+--virtual-network-name VIRTUAL_NETWORK_NAME
+optional, name of an existing virtual network to which
+we will add the VMs
+--subnet-names SUBNET_NAMES
+optional, subnet name to which the VMs will belong
+--custom-data CUSTOM_DATA
+optional, path to your own cloud-init file
+--discovery-service-url DISCOVERY_SERVICE_URL
+optional, url for an existing cluster discovery
+service. Else we will generate one.
+--pip                 optional, assigns public instance ip addresses to each
+VM
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:
