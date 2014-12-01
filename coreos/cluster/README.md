@@ -71,46 +71,26 @@ positional arguments:
 cloud_service_name    cloud service name
 
 optional arguments:
--h, --help            show this help message and exit
---version             show program's version number and exit
---ssh-cert SSH_CERT   required pfx certificate file with public key for ssh
---ssh-thumb SSH_THUMB
-required thumbprint of ssh cert
---subscription SUBSCRIPTION
-required Azure subscription id
---azure-cert AZURE_CERT
-required path to Azure cert pem file
---blob-container-url BLOB_CONTAINER_URL
-required url to blob container where vm disk images
-will be created, including /, ex:
-https://patcoreos.blob.core.windows.net/vhds/
---vm-size VM_SIZE     optional, VM size [Small]
---vm-name-prefix VM_NAME_PREFIX
-optional, VM name prefix [coreos]
---availability-set AVAILABILITY_SET
-optional, name of availability set for cluster
-[coreos-as]
---location LOCATION   optional, [West US]
---ssh SSH             optional, starts with 22001 and +1 for each machine in
-cluster
---coreos-image COREOS_IMAGE
-optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-
-Beta-494.1.0]
---num-nodes NUM_NODES
-optional, number of nodes to create (or add), defaults
-to 3
---virtual-network-name VIRTUAL_NETWORK_NAME
-optional, name of an existing virtual network to which
-we will add the VMs
---subnet-names SUBNET_NAMES
-optional, subnet name to which the VMs will belong
---custom-data CUSTOM_DATA
-optional, path to your own cloud-init file
---discovery-service-url DISCOVERY_SERVICE_URL
-optional, url for an existing cluster discovery
-service. Else we will generate one.
---pip                 optional, assigns public instance ip addresses to each
-VM
+-h, --help                                    show this help message and exit
+--version                                     show program's version number and exit
+--ssh-cert SSH_CERT                           required pem certificate file with public key for ssh
+--ssh-thumb SSH_THUMB                         required thumbprint of ssh cert
+--subscription SUBSCRIPTION                   required Azure subscription id
+--azure-cert AZURE_CERT                       required path to Azure cert pem file
+--blob-container-url BLOB_CONTAINER_URL       required url to blob container where vm disk images
+will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
+--vm-size VM_SIZE                             optional, VM size [Small]
+--vm-name-prefix VM_NAME_PREFIX               optional, VM name prefix [coreos]
+--availability-set AVAILABILITY_SET           optional, name of availability set for cluster [coreos-as]
+--location LOCATION                           optional, [West US]
+--ssh SSH                                     optional, starts with 22001 and +1 for each machine in cluster
+--coreos-image COREOS_IMAGE                   optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0]
+--num-nodes NUM_NODES                         optional, number of nodes to create (or add), defaults to 3
+--virtual-network-name VIRTUAL_NETWORK_NAME   optional, name of an existing virtual network to which we will add the VMs
+--subnet-names SUBNET_NAMES                   optional, subnet name to which the VMs will belong
+--custom-data CUSTOM_DATA                     optional, path to your own cloud-init file
+--discovery-service-url DISCOVERY_SERVICE_URL optional, url for an existing cluster discovery service. Else we will generate one.
+--pip                                         optional, assigns public instance ip addresses to each VM
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:
