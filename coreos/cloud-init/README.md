@@ -6,7 +6,7 @@ This tutorial is part of [P@'s Linux on Azure series](/../../).
 
 ## Getting a CoreOS cluster up and running on Azure
 
-CoreOS for Azure was [released bin 10.20.2014](http://azure.microsoft.com/blog/2014/10/20/azures-getting-bigger-faster-and-more-open/). The CoreOS website documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) is a good start.
+CoreOS for Azure was [released on 10.20.2014](http://azure.microsoft.com/blog/2014/10/20/azures-getting-bigger-faster-and-more-open/). The CoreOS website documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) is a good start.
 @timfpark also wrote [a great tutorial for how to setup a CoreOS cluster on Azure](https://github.com/timfpark/coreos-azure), and deploy a simple NodeJS app. This tutorial is quite similar for the CoreOS aspect, adding a few details about remote fleet setup, and shows deployment of a Java Spring application using MongoDB. CoreOS documentation includes a nice overview of [CoreOS Cluster Architectures](https://coreos.com/docs/cluster-management/setup/cluster-architectures/), describing various cluster sizes. This tutorial explains how to provision a small CoreOS cluster in Azure. I will add documentation to create the other topologies later, but these instructions should give you enough knowledge to create them by yourself.
 
 <img src="https://coreos.com/docs/cluster-management/setup/cluster-architectures/small.png"/>
