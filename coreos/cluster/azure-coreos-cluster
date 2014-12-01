@@ -12,7 +12,7 @@ parser.add_argument('--version', action='version', version='azure-coreos-cluster
 parser.add_argument('cloud_service_name',
                    help='cloud service name')
 parser.add_argument('--ssh-cert', required=True,
-                   help='required pfx certificate file with public key for ssh')
+                   help='required certificate file with public key for ssh, in .cer format')
 parser.add_argument('--ssh-thumb', required=True,
                    help='required thumbprint of ssh cert')
 parser.add_argument('--subscription', required=True,
@@ -148,10 +148,15 @@ result = sms.add_service_certificate(args.cloud_service_name,
                                      service_cert_file_data, SERVICE_CERT_FORMAT, '')
 wait_for_async(result.request_id, 'upload cert', 15)
 
+def get_vm_name(args, i):
+    return args.cloud_service_name + '-' + args.vm_name_prefix + '-' + str(i)
+
+vms =[]
+
 #Create the VMs
 for i in range(args.num_nodes):
     ssh_port = args.ssh +i
-    vm_name = args.cloud_service_name + '-' + args.vm_name_prefix + '-' + str(i)
+    vm_name = get_vm_name(args, i)
     if args.pip:
         pip_name = vm_name
     else:
@@ -174,3 +179,35 @@ for i in range(args.num_nodes):
                     system_config=system, os_virtual_hard_disk=os_hd,
                     role_size=args.vm_size, network_config=network)
     wait_for_async(result.request_id, 'create VM' + vm_name, 30)
+    vms.append({'name':vm_name,
+                'host':args.cloud_service_name + '.cloudapp.net',
+                'port':ssh_port,
+                'user':'core',
+                'identity':args.ssh_cert.replace('.cer','.pem')})
+
+#get the ip addresses
+def get_ips(service_name, deployment_name):
+    result = sms.get_deployment_by_name(service_name, deployment_name)
+    for instance in result.role_instance_list:
+        ips.append(instance.public_ips[0].address)
+    return ips
+
+#print dns config
+if args.pip:
+    ips = []
+    ips = get_ips(args.cloud_service_name, args.cloud_service_name)
+    print 'dns file ----'
+    for ip in ips:
+        print '@ 10800 IN A ' + ip
+    print '* 10800 IN CNAME @'
+    print 'end dns file ----'
+
+#print ~/.ssh/config
+print '~/.ssh/config ----'
+for vm in vms:
+    print 'Host ' + vm['name']
+    print '    HostName ' + vm['host']
+    print '    Port ' + str(vm['port'])
+    print '    User ' + vm['user']
+    print '    IdentityFile ' + vm['identity']
+print 'end ~/.ssh/config ----'
