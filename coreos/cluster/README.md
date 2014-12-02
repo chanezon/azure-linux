@@ -4,6 +4,8 @@
 
 ## Prerequisites
 
+### Python
+
 * Python > 2.7 and Pip
 * Azure Python SDK > 0.9.0
 
@@ -19,9 +21,32 @@ python -c "import azure; print(azure.__version__)"
 0.9.0
 ```
 
-* Azure subscription id and management certificate
-This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/). See the documentation for how to get your subscription id and certificate. The docs will also be useful  if you want to customize the script.
-Read http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/ for how to generate your ssh keys: pem, key, cer and sha1 thumbprint of the certificate. You can edit cert.conf to configure the cert with your own values.
+### Azure subscription id and management certificate
+
+This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/).
+
+You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
+
+Documentation for these is a bit confusing, so below are instructions for how to generate these.
+In case you want to go to official documentation on this:
+* [Create and Upload a Management Certificate for Azure](http://msdn.microsoft.com/en-us/library/azure/gg551722.aspx): go to Settings page in the Management Portal, and then click MANAGEMENT CERTIFICATES. Upload the .cer file. use the corresponding .pem file in the command line.
+* [How to Use SSH with Linux on Azure](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/)
+
+I have filled a config file for openssl in [cert.conf](cert.conf) (should be present in your source directory if you checked that project out): feel free to edit it to configure the cert with your own values.
+
+#### Azure Management cert
+
+```
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout azure-cert.pem -out azure-cert.pem
+openssl  x509 -outform der -in azure-cert.pem -out azure-cert.cer
+```
+
+Upload azure.cer to your Azure subscription in the portal. Portal, go to the gear at the bottom, settings, go to certificate management tab, click upload, pick the azure-cert.cer file.
+
+<img src="/../../blob/master/img/upload-azure-management-cert.png"/>
+
+#### Ssh cert
+
 ```
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem
 chmod 600 ssh-cert.key
@@ -30,23 +55,29 @@ openssl x509 -in ssh-cert.pem -sha1 -noout -fingerprint | sed s/://g
 SHA1 Fingerprint=44EF1BA225BE64154F7A55826CE56EA398C365B5
 ```
 
-Warning: you will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
-
-For the Azure management certificate, if you don't have one, generate one as shown above, then upload the .cer file to Azure as explained in [Create and Upload a Management Certificate for Azure](http://msdn.microsoft.com/en-us/library/azure/gg551722.aspx): go to Settings page in the Management Portal, and then click MANAGEMENT CERTIFICATES. Upload the .cer file. use the corresponding .pem file in the command line.
-
 ## Quick Example
 
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
 --ssh-cert ~/.ssh/ssh-cert.cer \
---subscription 9b5910a1-8e79d5ea2841 \
---azure-cert ~/.azure/9b5910a1-8e79d5ea2841.pem \
 --ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
 Creates a 3 node cluster called pat-coreos-cloud-service.
 use --num-nodes 5 option to bump it to create 5 instances instead of the default 3.
+A more robust cluster would look like this:
+
+```
+./azure-coreos-cluster pat-coreos-cloud-service \
+--ssh-cert ~/.ssh/ssh-cert.cer \
+--ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/
+```
 
 ## Usage
 
