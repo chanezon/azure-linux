@@ -23,6 +23,14 @@ python -c "import azure; print(azure.__version__)"
 
 ### Azure subscription id and management certificate
 
+#### Azure subscription id
+
+Get your Azure subscription id from the portal
+
+<img src="/../../blob/master/img/azure-subscription.png"/>
+
+#### Certificates
+
 This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/).
 
 You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
