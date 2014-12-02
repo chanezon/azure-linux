@@ -21,21 +21,24 @@ python -c "import azure; print(azure.__version__)"
 
 * Azure subscription id and management certificate
 This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/). See the documentation for how to get your subscription id and certificate. The docs will also be useful  if you want to customize the script.
-Read http://stackoverflow.com/questions/17705780/how-to-configure-ssh-login-with-key-pairs-for-a-linux-vm-using-azure-sdk-for-pyt for how to generate your ssh keys: pem, key, cer and sha1 thumbprint of the certificate.
+Read http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/ for how to generate your ssh keys: pem, key, cer and sha1 thumbprint of the certificate. You can edit cert.conf to configure the cert with your own values.
 ```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mycert.key -out mycert.pem
-openssl pkcs12 -export -in mycert.pem -inkey mycert.key -out mycert.pfx
-openssl x509 -in mycert.pem -sha1 -noout -fingerprint | sed s/://g
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem
+chmod 600 ssh-cert.key
+openssl  x509 -outform der -in ssh-cert.pem -out ssh-cert.cer
+openssl x509 -in ssh-cert.pem -sha1 -noout -fingerprint | sed s/://g
 SHA1 Fingerprint=44EF1BA225BE64154F7A55826CE56EA398C365B5
 ```
 
 Warning: you will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
 
+For the Azure management certificate, if you don't have one, generate one as shown above, then upload the .cer file to Azure as explained in [Create and Upload a Management Certificate for Azure](http://msdn.microsoft.com/en-us/library/azure/gg551722.aspx): go to Settings page in the Management Portal, and then click MANAGEMENT CERTIFICATES. Upload the .cer file. use the corresponding .pem file in the command line.
+
 ## Quick Example
 
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
---ssh-cert ~/.ssh/cert-with-ssh-public-key.cer \
+--ssh-cert ~/.ssh/ssh-cert.cer \
 --subscription 9b5910a1-8e79d5ea2841 \
 --azure-cert ~/.azure/9b5910a1-8e79d5ea2841.pem \
 --ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
