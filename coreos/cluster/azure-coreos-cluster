@@ -47,7 +47,7 @@ parser.add_argument('--discovery-service-url',
                    help='optional, url for an existing cluster discovery service. Else we will generate one.')
 parser.add_argument('--pip', action='store_true',
                    help='optional, assigns public instance ip addresses to each VM')
-parser.add_argument('--deis' default=False, type=bool,
+parser.add_argument('--deis', default=False, type=bool,
                    help='optional, automatically gets deis\' recommended CoreOS configuration')
 
 cloud_init_template = """#cloud-config
@@ -84,7 +84,7 @@ print args.discovery_service_url
 print args.pip
 
 # Create SSH cert if it's not given
-if !args.ssh_cert && !args.ssh_thumb:
+if not args.ssh_cert and not args.ssh_thumb:
   print 'SSH arguments not given, generating certificate'
   with open(os.devnull, 'w') as shutup:
       subprocess.call('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem', shell=True, stdout=shutup, stderr=shutup)
@@ -96,9 +96,9 @@ if !args.ssh_cert && !args.ssh_thumb:
   print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
 
 # Get Deis config
-if args.deis && args.custom_data:
+if args.deis and args.custom_data:
   print 'Conflicting options --deis and --custom-data provided, using --custom-data'
-else if args.deis && !args.custom_data:
+if args.deis and not args.custom_data:
   print 'Getting deis recommended CoreOS configuration'
   discovery_url_fetch = urllib2.urlopen('https://discovery.etcd.io/new')
   discovery_url = discovery_url_fetch.read()
