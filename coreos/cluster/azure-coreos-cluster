@@ -6,15 +6,17 @@ import argparse
 import urllib2
 import time
 import base64
+import os
+import subprocess
 
 parser = argparse.ArgumentParser(description='Create a CoreOS cluster on Microsoft Azure.')
 parser.add_argument('--version', action='version', version='azure-coreos-cluster 0.1')
 parser.add_argument('cloud_service_name',
                    help='cloud service name')
-parser.add_argument('--ssh-cert', required=True,
-                   help='required certificate file with public key for ssh, in .cer format')
-parser.add_argument('--ssh-thumb', required=True,
-                   help='required thumbprint of ssh cert')
+parser.add_argument('--ssh-cert',
+                   help='certificate file with public key for ssh, in .cer format')
+parser.add_argument('--ssh-thumb',
+                   help='thumbprint of ssh cert')
 parser.add_argument('--subscription', required=True,
                    help='required Azure subscription id')
 parser.add_argument('--azure-cert', required=True,
@@ -79,6 +81,19 @@ print args.subnet_names
 print args.discovery_service_url
 print args.pip
 
+# Create SSH cert if it's not given
+if !args.ssh_cert && !args.ssh_thumb:
+  print 'SSH arguments not given, generating certificate'
+  with open(os.devnull, 'w') as shutup:
+      subprocess.call('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem', shell=True, stdout=shutup, stderr=shutup)
+      subprocess.call('chmod 600 ssh-cert.key', shell=True, stdout=shutup, stderr=shutup)
+      subprocess.call('openssl  x509 -outform der -in ssh-cert.pem -out ssh-cert.cer', shell=True, stdout=shutup, stderr=shutup)
+      thumbprint = subprocess.check_output('openssl x509 -in ssh-cert.pem -sha1 -noout -fingerprint | sed s/://g', shell=True)
+      args.ssh_thumb = thumbprint.split('=')[1].replace('\n', '')
+      args.ssh_cert = './ssh-cert.cer'
+  print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
+
+# Setup custom data
 if args.custom_data:
     with open(args.custom_data, 'r') as f:
         cloud_init = f.read()
