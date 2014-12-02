@@ -11,16 +11,18 @@ This tutorial explains how to install Deis on Azure, expanding on the [Installin
 [Get Deis](http://deis.io/get-deis/) docs has detailed instructions for how to deploy Deis on several clouds, but not for Azure yet. The process is quite similar as the regular deployment of a CoreOS cluster on Azure, with 3 differences: VM sizes, cloud-init config file, IP addresses.
 
 You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, you will use the --pip --custom-data options.
-
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
---ssh-cert ~/.ssh/cert-with-ssh-public-key.cer \
---subscription 9b5910a1-8e79d5ea2841 \
---azure-cert ~/.azure/9b5910a1-8e79d5ea2841.pem \
+--ssh-cert ~/.ssh/ssh-cert.cer \
 --ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
---blob-container-url https://patcoreos.blob.core.windows.net/vhds/ \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
+--num-nodes 5 \
+--location "East US" \
+--vm-size Large \
 --pip \
---custom-data deis-cloud-init.yml
+--custom-data deis-cloud-init.yml \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
 ### VM Size

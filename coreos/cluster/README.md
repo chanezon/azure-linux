@@ -84,6 +84,9 @@ A more robust cluster would look like this:
 --ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
 --subscription 9b5910a1-...-8e79d5ea2841 \
 --azure-cert ~/.azure/azure-cert.pem \
+--num-nodes 5 \
+--location "East US" \
+--vm-size Large \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
