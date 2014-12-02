@@ -183,7 +183,7 @@ for i in range(args.num_nodes):
                 'host':args.cloud_service_name + '.cloudapp.net',
                 'port':ssh_port,
                 'user':'core',
-                'identity':args.ssh_cert.replace('.cer','.pem')})
+                'identity':args.ssh_cert.replace('.cer','.key')})
 
 #get the ip addresses
 def get_ips(service_name, deployment_name):
