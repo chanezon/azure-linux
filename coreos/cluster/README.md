@@ -33,7 +33,7 @@ Get your Azure subscription id from the portal
 
 This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/).
 
-You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
+You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate. 
 
 Documentation for these is a bit confusing, so below are instructions for how to generate these.
 In case you want to go to official documentation on this:
@@ -41,6 +41,8 @@ In case you want to go to official documentation on this:
 * [How to Use SSH with Linux on Azure](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/)
 
 I have filled a config file for openssl in [cert.conf](cert.conf) (should be present in your source directory if you checked that project out): feel free to edit it to configure the cert with your own values.
+
+**If you don't provide a certificate and thumbprint via `--ssh-cert` and `ssh-thumb`, the script will automatically create one for you (using the code below).** If you're interested in the details, read http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/ for how to generate your ssh keys: pem, key, cer and sha1 thumbprint of the certificate. You can edit cert.conf to configure the cert with your own values.
 
 #### Azure Management cert
 
@@ -67,8 +69,6 @@ SHA1 Fingerprint=44EF1BA225BE64154F7A55826CE56EA398C365B5
 
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
---ssh-cert ~/.ssh/ssh-cert.cer \
---ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
 --subscription 9b5910a1-...-8e79d5ea2841 \
 --azure-cert ~/.azure/azure-cert.pem \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
@@ -118,8 +118,6 @@ cloud_service_name    cloud service name
 optional arguments:
 -h, --help                                    show this help message and exit
 --version                                     show program's version number and exit
---ssh-cert SSH_CERT                           required pem certificate file with public key for ssh
---ssh-thumb SSH_THUMB                         required thumbprint of ssh cert
 --subscription SUBSCRIPTION                   required Azure subscription id
 --azure-cert AZURE_CERT                       required path to Azure cert pem file
 --blob-container-url BLOB_CONTAINER_URL       required url to blob container where vm disk images
@@ -129,6 +127,8 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --availability-set AVAILABILITY_SET           optional, name of availability set for cluster [coreos-as]
 --location LOCATION                           optional, [West US]
 --ssh SSH                                     optional, starts with 22001 and +1 for each machine in cluster
+--ssh-cert SSH_CERT                           optional, pem certificate file with public key for ssh
+--ssh-thumb SSH_THUMB                         optional, thumbprint of ssh cert
 --coreos-image COREOS_IMAGE                   optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0]
 --num-nodes NUM_NODES                         optional, number of nodes to create (or add), defaults to 3
 --virtual-network-name VIRTUAL_NETWORK_NAME   optional, name of an existing virtual network to which we will add the VMs
