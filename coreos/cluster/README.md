@@ -94,9 +94,10 @@ A more robust cluster would look like this:
 
 ```
 ./azure-coreos-cluster -h
-usage: azure-coreos-cluster [-h] [--version] --ssh-cert SSH_CERT --ssh-thumb
-SSH_THUMB --subscription SUBSCRIPTION --azure-cert
+usage: azure-coreos-cluster [-h] [--version] --subscription SUBSCRIPTION --azure-cert
 AZURE_CERT --blob-container-url BLOB_CONTAINER_URL
+[--ssh-cert SSH_CERT]
+[--ssh-thumb SSH_THUMB]
 [--vm-size VM_SIZE]
 [--vm-name-prefix VM_NAME_PREFIX]
 [--availability-set AVAILABILITY_SET]
@@ -108,6 +109,7 @@ AZURE_CERT --blob-container-url BLOB_CONTAINER_URL
 [--custom-data CUSTOM_DATA]
 [--discovery-service-url DISCOVERY_SERVICE_URL]
 [--pip]
+[--deis]
 cloud_service_name
 
 Create a CoreOS cluster on Microsoft Azure.
@@ -136,6 +138,7 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --custom-data CUSTOM_DATA                     optional, path to your own cloud-init file
 --discovery-service-url DISCOVERY_SERVICE_URL optional, url for an existing cluster discovery service. Else we will generate one.
 --pip                                         optional, assigns public instance ip addresses to each VM
+--deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically 
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:
