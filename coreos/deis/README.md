@@ -10,18 +10,17 @@ This tutorial explains how to install Deis on Azure, expanding on the [Installin
 
 [Get Deis](http://deis.io/get-deis/) docs has detailed instructions for how to deploy Deis on several clouds, but not for Azure yet. The process is quite similar as the regular deployment of a CoreOS cluster on Azure, with 3 differences: VM sizes, cloud-init config file, IP addresses.
 
-You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, you will use the --pip --custom-data options.
+You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, the script has a `--deis` argument, instructing the script to automatically fetch deis` recommended CoreOS user data configuration, injecting a discovery url from etcd.io. You can provide your own custom data file using the you will use the `--custom-data options`. In both cases, `--pip` is a required argument.
+
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
---ssh-cert ~/.ssh/ssh-cert.cer \
---ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
 --subscription 9b5910a1-...-8e79d5ea2841 \
 --azure-cert ~/.azure/azure-cert.pem \
 --num-nodes 5 \
 --location "East US" \
 --vm-size Large \
 --pip \
---custom-data deis-cloud-init.yml \
+--deis true
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
@@ -30,6 +29,7 @@ You may want to provision your cluster in one shot using the [Azure CoreOS clust
 [Deis system requirements docs](http://docs.deis.io/en/latest/installing_deis/system-requirements/) recommends 4Gb of RAM and 40Gb disk space for VMs. This means you may want to use an A2/Medium size VM for your deployment (see [Azure VM sizes](http://msdn.microsoft.com/en-us/library/azure/dn197896.aspx)), instead of a Small. That said, for testing it, I successfully deployed my cluster on a Small, but it was very slow. In terms of number of machines, deis recommends 3, 5 or more. The one I created with 3 machines worked, but you may want to extend it to 5 for real apps.
 
 ### cloud-init
+**You can skip this step by providing the `--deis true` argument, instructing the script to get the config file and discovery url for you.**
 
 When creating your VMs, you want to use the [special cloud-init file provided by deis](https://github.com/deis/deis/blob/master/contrib/coreos/user-data.example). They pre-install a bunch of stuff in there, and install will fail without that. Don't forget to get a [new discovery token](https://discovery.etcd.io/new) for your cluster and add that to the file before deploying.
 
