@@ -4,7 +4,7 @@
 
 Documentation and examples for how to leverage various linux technologies with Microsoft Azure.
 
-I write tutorials with a bit of automation code about things I didn't see documented elsewhere. I will also add a set of links to relevant docs or blog posts that I found useful.
+I write tutorials with a bit of automation code about things I didn't see documented elsewhere, or where I want to add context and details to existing docs and blog posts. I also list a set of links to relevant docs or blog posts that I found useful.
 
 ## CoreOS
 
@@ -22,6 +22,12 @@ The main issue installing Kubernetes on Azure is networking: [Kubernetes needs t
 * [Kubernetes, Getting started on Microsoft Azure](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/getting-started-guides/azure.md) uses Ubuntu images, OpenVPN for networking, and right now broken at git HEAD, valid for Kubernetes 0.3
 * [Weave for Kubernetes on CoreOS](http://weaveblog.com/2014/11/11/weave-for-kubernetes/) seems promising, and should be a good approach for Azure
 * [Deploying Kubernetes on CoreOS with Fleet and Flannel](https://github.com/kelseyhightower/kubernetes-fleet-tutorial/blob/master/README.md) the other main approach
+
+## Ubuntu Core
+
+[Snappy Ubuntu Core](http://www.ubuntu.com/cloud/tools/snappy) is a minimal server image of Ubuntu, coupled with a transactional OS update mechanism, similar to CoreOS, and an application model inspired by mobile app stores called snappy. It was announced 12/9/2014, with initial support for Azure first. 
+
+* [Getting started with Snappy Ubuntu Core on Azure](/ubuntu/README.md)
 
 ## Docker
 
