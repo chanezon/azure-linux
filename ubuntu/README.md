@@ -78,10 +78,10 @@ This will generate a xkcd-webserver_0.3.3_all.snap file. In order to deploy a sn
 
 ```
 Host pat-ubuntu
-HostName pat-ubuntu.cloudapp.net
-Port 22
-User ubuntu
-IdentityFile ~/.ssh/ssh-private-key.key
+    HostName pat-ubuntu.cloudapp.net
+    Port 22
+    User ubuntu
+    IdentityFile ~/.ssh/ssh-private-key.key
 ```
 
 Upload your private key to pat-ubuntu
