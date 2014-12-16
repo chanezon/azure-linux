@@ -1,5 +1,7 @@
 # Azure CoreOS cluster deployment tool
 
+This tutorial is part of [P@'s Linux on Azure series](/../../).
+
 [Deploying a CoreOS cluster on Azure](../../../master/coreos/cloud-init/README.md) takes a lot of manual steps using the Azure Cross platform CLI. This tool, built using the Azure Python SDK, automates these steps.
 
 ## Prerequisites
@@ -29,11 +31,11 @@ Get your Azure subscription id from the portal
 
 <img src="/../../blob/master/img/azure-subscription.png"/>
 
-#### Certificates
+#### <a name="certs"></a>Certificates
 
 This script uses the [Azure Service Management API from the Azure Python SDK](http://azure.microsoft.com/en-us/documentation/articles/cloud-services-python-how-to-use-service-management/).
 
-You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate. 
+You will need 2 certificates in order to use this script: your azure management certificate, in pem format, and the ssh certificate in .cer format, as well as a sha1 thumbprint of this certificate.
 
 Documentation for these is a bit confusing, so below are instructions for how to generate these.
 In case you want to go to official documentation on this:
@@ -138,7 +140,7 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --custom-data CUSTOM_DATA                     optional, path to your own cloud-init file
 --discovery-service-url DISCOVERY_SERVICE_URL optional, url for an existing cluster discovery service. Else we will generate one.
 --pip                                         optional, assigns public instance ip addresses to each VM
---deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically 
+--deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:
