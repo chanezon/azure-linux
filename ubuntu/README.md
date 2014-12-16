@@ -11,7 +11,7 @@ The [Ubuntu Core on Azure documentation](http://www.ubuntu.com/cloud/tools/snapp
 
 ## Azure Management Certificate
 
-See Azure documentation for how to setup [Azure Cross Platform CLI](http://azure.microsoft.com/en-us/documentation/articles/xplat-cli/) and connect it to your Azure subscription. See [Azure Management & SSH Certs](/../../cluster/README.md#certs) for a quick version of how to generate these.
+See Azure documentation for how to setup [Azure Cross Platform CLI](http://azure.microsoft.com/en-us/documentation/articles/xplat-cli/) and connect it to your Azure subscription. See [Azure Management & SSH Certs](/../../coreos/cluster/README.md#certs) for a quick version of how to generate these.
 
 ## Create the Ubuntu Core VM
 
@@ -32,7 +32,7 @@ snappy:
     ssh_enabled: True
 ```
 
-One area where the documentation is not super clear right now is username: you need to pass ubuntu as the username. If you pass any other name, the user is not created and you cannot login to the VM. See [Azure documentation for how to generate ssh certificates](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/), or my quicker version [Azure Management & SSH Certs](/../../cluster/README.md#certs).
+One area where the documentation is not super clear right now is username: you need to pass ubuntu as the username. If you pass any other name, the user is not created and you cannot login to the VM. See [Azure documentation for how to generate ssh certificates](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-use-ssh-key/), or my quicker version [Azure Management & SSH Certs](/../../coreos/cluster/README.md#certs).
 
 ```
 azure vm create pat-snappy \
