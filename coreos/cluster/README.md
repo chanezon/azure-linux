@@ -112,6 +112,7 @@ AZURE_CERT --blob-container-url BLOB_CONTAINER_URL
 [--discovery-service-url DISCOVERY_SERVICE_URL]
 [--pip]
 [--deis]
+[--data-disk]
 cloud_service_name
 
 Create a CoreOS cluster on Microsoft Azure.
@@ -141,6 +142,7 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --discovery-service-url DISCOVERY_SERVICE_URL optional, url for an existing cluster discovery service. Else we will generate one.
 --pip                                         optional, assigns public instance ip addresses to each VM
 --deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically
+--data-disk                                   optional, creates a data disk in same blob container as the vm, and attaches it to the VM
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:
@@ -151,3 +153,32 @@ azure vm image list|grep CoreOS
 [Instance-Level Public IP Addresses](http://msdn.microsoft.com/en-us/library/azure/dn690118.aspx) is right now in preview, and you are limited to 5 per subscription. The --pip option is useful for setting up a [CoreOS cluster for Deis](../../../master/coreos/deis/README.md). This option is not implemented yet.
 
 For now, virtual-network and subnet options are not implemented yet.
+
+## data-disk
+
+When you use the --data-disk option, a 10Gb data disk is created and attached to your VM as /dev/sdc. You still need to mount it at startup, typically using a mount unit in your cloud-ini.yml. This is an example of mounting it in /var/lib/docker.
+
+```yml
+- name: format-ephemeral.service
+  command: start
+  content: |
+    [Unit]
+    Description=Formats the ephemeral drive
+    [Service]
+    Type=oneshot
+    RemainAfterExit=yes
+    ExecStart=/usr/sbin/wipefs -f /dev/sdc
+    ExecStart=/usr/sbin/mkfs.btrfs -f /dev/sdc
+- name: var-lib-docker.mount
+  command: start
+  content: |
+    [Unit]
+    Description=Mount ephemeral to /var/lib/docker
+    Requires=format-ephemeral.service
+    After=format-ephemeral.service
+    Before=docker.service
+    [Mount]
+    What=/dev/sdc
+    Where=/var/lib/docker
+    Type=btrfs
+```

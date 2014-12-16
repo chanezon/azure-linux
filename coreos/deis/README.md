@@ -24,6 +24,21 @@ You may want to provision your cluster in one shot using the [Azure CoreOS clust
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
+One best practice is to attach a data disk mounted to /var/lib/docker in order to have all docker iops go through this disk, and have container images persisted through reboots.
+In order to do that, use the cluster --data-disk option, with 2 units for formatting and mountin the disk in cloud-init.yml. There is a sample [deis-cloud-init-with-disk.yml](deis-cloud-init-with-disk.yml) sample in this directory (don't forget to add a new discovery token line 7 before use:-). You cannot use the --deis option in that case, since we added some units in cloud-init.yml.
+
+```
+./azure-coreos-cluster pat-coreos-cloud-service \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
+--num-nodes 5 \
+--location "East US" \
+--vm-size Large \
+--pip \
+--attach-disk \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/
+```
+
 ### VM Size
 
 [Deis system requirements docs](http://docs.deis.io/en/latest/installing_deis/system-requirements/) recommends 4Gb of RAM and 40Gb disk space for VMs. This means you may want to use an A2/Medium size VM for your deployment (see [Azure VM sizes](http://msdn.microsoft.com/en-us/library/azure/dn197896.aspx)), instead of a Small. That said, for testing it, I successfully deployed my cluster on a Small, but it was very slow. In terms of number of machines, deis recommends 3, 5 or more. The one I created with 3 machines worked, but you may want to extend it to 5 for real apps.

@@ -49,6 +49,8 @@ parser.add_argument('--pip', action='store_true',
                    help='optional, assigns public instance ip addresses to each VM')
 parser.add_argument('--deis', action='store_true',
                    help='optional, automatically gets deis recommended CoreOS configuration')
+parser.add_argument('--data-disk', action='store_true',
+                   help='optional, attaches a data disk to each VM')
 
 cloud_init_template = """#cloud-config
 
@@ -67,21 +69,6 @@ coreos:
 """
 
 args = parser.parse_args()
-print args.cloud_service_name
-print args.ssh_cert
-print args.azure_cert
-print args.subscription
-print args.vm_size
-print args.vm_name_prefix
-print args.availability_set
-print args.location
-print args.ssh
-print args.coreos_image
-print args.num_nodes
-print args.virtual_network_name
-print args.subnet_names
-print args.discovery_service_url
-print args.pip
 
 # Create SSH cert if it's not given
 if not args.ssh_cert and not args.ssh_thumb:
@@ -166,6 +153,15 @@ def network_config(subnet_name=None, port='59913', public_ip_name=None):
         network.public_ips.public_ips.append(PublicIP(name=public_ip_name))
     return network
 
+def data_hd(target_container_url, target_blob_name, target_lun, target_disk_size_in_gb):
+    media_link = target_container_url + target_blob_name
+    data_hd = DataVirtualHardDisk()
+    data_hd.disk_label = target_blob_name
+    data_hd.logical_disk_size_in_gb = target_disk_size_in_gb
+    data_hd.lun = target_lun
+    data_hd.media_link = media_link
+    return data_hd
+
 sms = ServiceManagementService(args.subscription, args.azure_cert)
 
 #Create the cloud service
@@ -197,18 +193,26 @@ for i in range(args.num_nodes):
                             source_image_name=args.coreos_image)
     system = linux_config(vm_name, args)
     network = network_config(subnet_name=args.subnet_names, port=ssh_port, public_ip_name=pip_name)
+    #specifiy the data disk, important to start at lun = 0
+    if args.data_disk:
+        data_disk = data_hd(args.blob_container_url, vm_name + '-data.vhd', 0, 10)
+        data_disks = DataVirtualHardDisks()
+        data_disks.data_virtual_hard_disks.append(data_disk)
+    else:
+        data_disks = None
+
     if i == 0:
         result = sms.create_virtual_machine_deployment(
                     args.cloud_service_name, deployment_name=args.cloud_service_name,
                     deployment_slot='production', label=vm_name,
                     role_name=vm_name, system_config=system, os_virtual_hard_disk=os_hd,
-                    role_size=args.vm_size, network_config=network)
+                    role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks)
     else:
         result = sms.add_role(
                     args.cloud_service_name, deployment_name=args.cloud_service_name,
                     role_name=vm_name,
                     system_config=system, os_virtual_hard_disk=os_hd,
-                    role_size=args.vm_size, network_config=network)
+                    role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks)
     wait_for_async(result.request_id, 'create VM' + vm_name, 30)
     vms.append({'name':vm_name,
                 'host':args.cloud_service_name + '.cloudapp.net',
