@@ -74,7 +74,26 @@ bzr branch lp:~snappy-dev/snappy-hub/snappy-examples
 cd snappy-examples/python-xkcd-webserver
 snappy build .
 ```
-This will generate a xkcd-webserver_0.3.3_all.snap file. In order to deploy a snap file to a remote Ubuntu Core machine, you can use ssh urls. This requires you to upload your private key to pat-ubuntu, and configure ssh there to connect to pat-snappy. From the Mac where I do development, my ~/.ssh/config has an entry:
+
+This will generate a xkcd-webserver_0.3.3_all.snap file. Looking into the snappy-examples, you'll [how snappy apps are structured](http://developer.ubuntu.com/snappy/packaging-format-for-apps/). Snappy does not impose a lot of constraints on the app structure: you put all your code and binaries under a directory structure, and write meta data in a simple yaml file in meta/package.yaml: version, author, services definition, ports,...
+
+```
+name: xkcd-webserver
+version: 0.3.4
+vendor: Michael Vogt <michael.vogt@ubuntu.com>
+icon: meta/xkcd.svg
+services:
+  - name: xkcd-webserver
+    start: bin/xkcd-webserver
+ports:
+  required: 80
+```
+
+When deployed, a package is deployed to /apps/<package>/current/, which is read only, and you are provided 2 writeable directories, /var/apps/<pkgname>/current/ and /home/<user>/apps/<pkgname>/current/.
+
+## Deploying a snappy app
+
+In order to deploy a snap file to a remote Ubuntu Core machine, you can use ssh urls. This requires you to upload your private key to pat-ubuntu, and configure ssh there to connect to pat-snappy. From the Mac where I do development, my ~/.ssh/config has an entry:
 
 ```
 Host pat-ubuntu
