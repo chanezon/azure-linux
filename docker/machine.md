@@ -7,7 +7,7 @@ This tutorial is part of [P@'s Linux on Azure series](/../../).
 ## Build machine
 
 Instructions are for Mac OS X. Install Docker (tested with 1.3.2) on your mac. Make sure it works and that boot2docker vm has a share of /Users
-Clone machine code and build it.
+Clone machine code and build it. The build uses Docker, and takes a while the first time: one of the images needed is > 1Gb.
 
 ```
 git clone https://github.com/docker/machine.git
@@ -23,11 +23,7 @@ golang:1.3-cross: The image you are pulling has been verified
 Number of parallel builds: 4
 
 -->      darwin/386: github.com/docker/machine
--->    darwin/amd64: github.com/docker/machine
--->       linux/386: github.com/docker/machine
--->     linux/amd64: github.com/docker/machine
--->       linux/arm: github.com/docker/machine
--->     windows/386: github.com/docker/machine
+...
 -->   windows/amd64: github.com/docker/machine
 ```
 
