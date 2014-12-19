@@ -136,7 +136,7 @@ def wait_for_async(request_id, operation_name, timeout):
 def linux_config(hostname, args):
     pk = PublicKey(args.ssh_thumb,
                    u'/home/core/.ssh/authorized_keys')
-    system = LinuxConfigurationSet(hostname, 'core', 'f00ba,r!', True,
+    system = LinuxConfigurationSet(hostname, 'core', None, True,
               custom_data=cloud_init)
     system.ssh.public_keys.public_keys.append(pk)
     system.disable_ssh_password_authentication = True
