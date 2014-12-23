@@ -89,6 +89,12 @@ ssh-add ~/.ssh/my_private_key.key
 export DEISCTL_TUNNEL=pat-spring-doge-2.cloudapp.net:22001
 ```
 
+Because of the internal addresses Azure uses for virtual machines, we have to use a custom ``deis-builder`` component with changes for Azure. Tell Deis to use it:
+
+```console
+$ deisctl config builder set image=deis/builder:v1.1.1-azure
+```
+
 Then let deis know about your private key, and set the domain for the cluster.
 ```
 deisctl config platform set sshPrivateKey=~/.ssh/my_private_key.key
