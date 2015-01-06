@@ -48,7 +48,7 @@ parser.add_argument('--discovery-service-url',
 parser.add_argument('--pip', action='store_true',
                    help='optional, assigns public instance ip addresses to each VM')
 parser.add_argument('--deis', action='store_true',
-                   help='optional, automatically gets deis recommended CoreOS configuration')
+                   help='optional, automatically gets deis recommended CoreOS configuration and opens some endpoints')
 parser.add_argument('--data-disk', action='store_true',
                    help='optional, attaches a data disk to each VM')
 
@@ -151,6 +151,11 @@ def network_config(subnet_name=None, port='59913', public_ip_name=None):
         network.subnet_names.append(subnet_name)
     if public_ip_name:
         network.public_ips.public_ips.append(PublicIP(name=public_ip_name))
+    if args.deis:
+        network.input_endpoints.input_endpoints.append(
+            ConfigurationSetInputEndpoint('http', 'tcp', '80', '80', 'http'))
+        network.input_endpoints.input_endpoints.append(
+            ConfigurationSetInputEndpoint('deis', 'tcp', '2222', '2222', 'deis'))
     return network
 
 def data_hd(target_container_url, target_blob_name, target_lun, target_disk_size_in_gb):
