@@ -10,7 +10,7 @@ This tutorial explains how to install Deis on Azure, expanding on the [Installin
 
 [Get Deis](http://deis.io/get-deis/) docs has detailed instructions for how to deploy Deis on several clouds, but not for Azure yet. The process is quite similar as the regular deployment of a CoreOS cluster on Azure, with 3 differences: VM sizes, cloud-init config file, IP addresses.
 
-You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, the script has a `--deis` argument, instructing the script to automatically fetch deis recommended CoreOS user data configuration, injecting a discovery url from etcd.io. You can provide your own custom data file using the you will use the `--custom-data options`. In both cases, `--pip` is a required argument.
+You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, the script has a `--deis` argument, instructing the script to automatically fetch deis recommended CoreOS user data configuration, injecting a discovery url from etcd.io. You can provide your own custom data file using the you will use the `--custom-data options`. In both cases, `--pip` is a required argument. The --deis option will also create load balanced endpoints on ports 80 and 2222 for each machine in the cluster, with a probe for path /health-check for both. This ensures that deis router and control planes get load balanced, and that machines for which these services fail get removed from the cluster load balanced endpoint.
 
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
@@ -35,7 +35,7 @@ In order to do that, use the cluster --data-disk option, with 2 units for format
 --location "East US" \
 --vm-size Large \
 --pip \
---attach-disk \
+--data-disk \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 

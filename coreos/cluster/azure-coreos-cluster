@@ -142,6 +142,15 @@ def linux_config(hostname, args):
     system.disable_ssh_password_authentication = True
     return system
 
+def endpoint_config(name, port):
+    endpoint = ConfigurationSetInputEndpoint(name, 'tcp', port, port, name)
+    load_balancer_probe = LoadBalancerProbe()
+    load_balancer_probe.path = 'health-check'
+    load_balancer_probe.port = port
+    load_balancer_probe.protocol = 'http'
+    endpoint.load_balancer_probe = load_balancer_probe
+    return endpoint
+
 def network_config(subnet_name=None, port='59913', public_ip_name=None):
     network = ConfigurationSet()
     network.configuration_set_type = 'NetworkConfiguration'
@@ -152,10 +161,8 @@ def network_config(subnet_name=None, port='59913', public_ip_name=None):
     if public_ip_name:
         network.public_ips.public_ips.append(PublicIP(name=public_ip_name))
     if args.deis:
-        network.input_endpoints.input_endpoints.append(
-            ConfigurationSetInputEndpoint('http', 'tcp', '80', '80', 'http'))
-        network.input_endpoints.input_endpoints.append(
-            ConfigurationSetInputEndpoint('deis', 'tcp', '2222', '2222', 'deis'))
+        network.input_endpoints.input_endpoints.append(endpoint_config('http', '80'))
+        network.input_endpoints.input_endpoints.append(endpoint_config('deis', '2222'))
     return network
 
 def data_hd(target_container_url, target_blob_name, target_lun, target_disk_size_in_gb):

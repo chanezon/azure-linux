@@ -141,7 +141,7 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --custom-data CUSTOM_DATA                     optional, path to your own cloud-init file
 --discovery-service-url DISCOVERY_SERVICE_URL optional, url for an existing cluster discovery service. Else we will generate one.
 --pip                                         optional, assigns public instance ip addresses to each VM
---deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically
+--deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically. It also will configure load balanced endpoints and health checks for deis services.
 --data-disk                                   optional, creates a data disk in same blob container as the vm, and attaches it to the VM
 ```
 
