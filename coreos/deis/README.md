@@ -10,7 +10,7 @@ This tutorial explains how to install Deis on Azure, expanding on the [Installin
 
 [Get Deis](http://deis.io/get-deis/) docs has detailed instructions for how to deploy Deis on several clouds, but not for Azure yet. The process is quite similar as the regular deployment of a CoreOS cluster on Azure, with 3 differences: VM sizes, cloud-init config file, IP addresses.
 
-You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, the script has a `--deis` argument, instructing the script to automatically fetch deis recommended CoreOS user data configuration, injecting a discovery url from etcd.io. You can provide your own custom data file using the you will use the `--custom-data options`. In both cases, `--pip` is a required argument. The --deis option will also create load balanced endpoints on ports 80 and 2222 for each machine in the cluster, with a probe for path /health-check for both. This ensures that deis router and control planes get load balanced, and that machines for which these services fail get removed from the cluster load balanced endpoint.
+You may want to provision your cluster in one shot using the [Azure CoreOS cluster deployment tool](https://github.com/chanezon/azure-linux/blob/master/coreos/cluster/README.md). For Deis, you need to specify a deis specific cloud-init, using the `--custom-data options`. In both cases, `--pip` is a required argument. The --deis option will  create load balanced endpoints on ports 80 and 2222 for each machine in the cluster, with a probe for path /health-check for both. This ensures that deis router and control planes get load balanced, and that machines for which these services fail get removed from the cluster load balanced endpoint.
 
 ```
 ./azure-coreos-cluster pat-coreos-cloud-service \
@@ -21,6 +21,7 @@ You may want to provision your cluster in one shot using the [Azure CoreOS clust
 --vm-size Large \
 --pip \
 --deis \
+--custom-data deis-custom-data.yml \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
@@ -36,6 +37,7 @@ In order to do that, use the cluster --data-disk option, with 2 units for format
 --vm-size Large \
 --pip \
 --data-disk \
+--custom-data deis-custom-data.yml \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
@@ -44,7 +46,6 @@ In order to do that, use the cluster --data-disk option, with 2 units for format
 [Deis system requirements docs](http://docs.deis.io/en/latest/installing_deis/system-requirements/) recommends 4Gb of RAM and 40Gb disk space for VMs. This means you may want to use an A2/Medium size VM for your deployment (see [Azure VM sizes](http://msdn.microsoft.com/en-us/library/azure/dn197896.aspx)), instead of a Small. That said, for testing it, I successfully deployed my cluster on a Small, but it was very slow. In terms of number of machines, deis recommends 3, 5 or more. The one I created with 3 machines worked, but you may want to extend it to 5 for real apps.
 
 ### cloud-init
-**You can skip this step by providing the `--deis` argument, instructing the script to get the config file and discovery url for you.**
 
 When creating your VMs, you want to use the [special cloud-init file provided by deis](https://github.com/deis/deis/blob/master/contrib/coreos/user-data.example). They pre-install a bunch of stuff in there, and install will fail without that. Don't forget to get a [new discovery token](https://discovery.etcd.io/new) for your cluster and add that to the file before deploying.
 

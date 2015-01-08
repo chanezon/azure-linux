@@ -48,7 +48,7 @@ parser.add_argument('--discovery-service-url',
 parser.add_argument('--pip', action='store_true',
                    help='optional, assigns public instance ip addresses to each VM')
 parser.add_argument('--deis', action='store_true',
-                   help='optional, automatically gets deis recommended CoreOS configuration and opens some endpoints')
+                   help='optional, automatically opens http and controller endpoints')
 parser.add_argument('--data-disk', action='store_true',
                    help='optional, attaches a data disk to each VM')
 
@@ -81,20 +81,6 @@ if not args.ssh_cert and not args.ssh_thumb:
       args.ssh_thumb = thumbprint.split('=')[1].replace('\n', '')
       args.ssh_cert = './ssh-cert.cer'
   print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
-
-# Get Deis config
-if args.deis and args.custom_data:
-  print 'Conflicting options --deis and --custom-data provided, using --custom-data'
-if args.deis and not args.custom_data:
-  print 'Getting deis recommended CoreOS configuration'
-  discovery_url_fetch = urllib2.urlopen('https://discovery.etcd.io/new')
-  discovery_url = discovery_url_fetch.read()
-  deis_config_master = urllib2.urlopen('https://raw.githubusercontent.com/deis/deis/master/contrib/coreos/user-data.example')
-  deis_config_string = deis_config_master.read()
-  deis_config_string = deis_config_string.replace('  etcd:', '  etcd:\n    discovery: ' + discovery_url)
-  with open('deis_user_data.yml', 'w') as deis_config:
-    deis_config.write(deis_config_string)
-  args.custom_data = './deis_user_data.yml'
 
 # Setup custom data
 if args.custom_data:
