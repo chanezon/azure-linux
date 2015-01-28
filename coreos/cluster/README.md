@@ -184,3 +184,7 @@ When you use the --data-disk option, a 10Gb data disk is created and attached to
     Where=/var/lib/docker
     Type=btrfs
 ```
+
+## output
+
+The ```--output``` option, with an optional file name, generates a cluster state file in json format. If no file name is provided, a state file called [cloud-service-name].json will be generated. Here is a [sample state file](./pat-coreos-cloud-service.json). This state file is useful when you need to do post processing on all machines of your cluster, for example when installing [weave](../../../master/coreos/weave/README.md).
