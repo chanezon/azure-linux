@@ -42,7 +42,7 @@ INFO[0341] "pat-1" has been created and is now the active machine
 INFO[0341] To connect: docker $(machine config pat-1) ps 
 ```
 
-There is an option --azure-name to specify the name you want Azure to use for the cloud service where this machine will be created, but it does not seem to be taken into account.
+There is an option --azure-name to specify the name you want Azure to use for the cloud service where this machine will be created, but it does not seem to be taken into account. I logged an issue about this https://github.com/docker/machine/issues/419
 
 machine writes metadata about the machine that has been created at ~/.docker/machines/[machine-name]/config.json, and creates certificates to secure communication with the remote machine in ~/.docker/machines/[machine-name]
 
@@ -55,7 +55,7 @@ cat ~/.docker/machines/pat-1/config.json
 {"DriverName":"azure","Driver":{"MachineName":"pat-1-20150128000516","SubscriptionID":"9b5910a1-d954-4b45-85e8-8e79d5ea2841","SubscriptionCert":"/Users/pat/.azure/9b5910a1-d954-4b45-85e8-8e79d5ea2841.pem","PublishSettingsFilePath":"","Name":"","Location":"West US","Size":"Small","UserName":"ubuntu","UserPassword":"","Image":"b39f27a8b8c64d52b05eac6a62ebad85__Ubuntu-14_04_1-LTS-amd64-server-20140927-en-us-30GB","SSHPort":22,"DockerPort":2376,"CaCertPath":"","PrivateKeyPath":""},"CaCertPath":"","ServerCertPath":"","ServerKeyPath":"","PrivateKeyPath":"","ClientCertPath":""}
 ```
 
-One word of caution: MachineName is the name of the cloud service that will be created in Azure. A cloud service name must be between 3 and 25 characters. machine adds a 16 character postfix to the name you provide on the command line. This means you want to use a machine name that is shorter than 9 characters. Else machine will throw an error message.
+One word of caution: MachineName is the name of the cloud service that will be created in Azure. A cloud service name must be between 3 and 25 characters. machine adds a 16 character timestamp postfix to the name you provide on the command line. This means you want to use a machine name that is shorter than 9 characters. Else machine will throw an error message.
 
 The Azure driver has many other options: according to machine create --help
 ```
