@@ -16,4 +16,4 @@ Let's try them with our CoreOS cluster on Azure.
 
 ## Weave approach
 
-In order to install weave on your CoreOS cluster, please follow the instructions at [Installing Weave on CoreOS on Azure](/../../blob/master/coreos/weave/REAME.md).
+In order to install weave on your CoreOS cluster, please follow the instructions at [Installing Weave on CoreOS on Azure](/../../blob/master/coreos/weave/README.md).
