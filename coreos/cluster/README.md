@@ -113,6 +113,7 @@ AZURE_CERT --blob-container-url BLOB_CONTAINER_URL
 [--pip]
 [--deis]
 [--data-disk]
+[--output]
 cloud_service_name
 
 Create a CoreOS cluster on Microsoft Azure.
@@ -143,6 +144,7 @@ will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/
 --pip                                         optional, assigns public instance ip addresses to each VM
 --deis                                        optional, if you provision a CoreOS cluster to deploy deis, this option will fetch deis specific cloud-init and generate a new discovery token in it automatically. It also will configure load balanced endpoints and health checks for deis services.
 --data-disk                                   optional, creates a data disk in same blob container as the vm, and attaches it to the VM
+--output                                      optional, creates a state file with metadata about VMs in this cluster, to be used in post processing commands. If passed no filename, a file [cloud_service_name].json gets created
 ```
 
 See official CoreOS Azure documentation [Running CoreOS on Azure](https://coreos.com/docs/running-coreos/cloud-providers/azure/) for CoreOS image names. Or install Azure CLI and run:

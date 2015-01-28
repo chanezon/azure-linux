@@ -8,6 +8,7 @@ import time
 import base64
 import os
 import subprocess
+import json
 
 parser = argparse.ArgumentParser(description='Create a CoreOS cluster on Microsoft Azure.')
 parser.add_argument('--version', action='version', version='azure-coreos-cluster 0.1')
@@ -33,8 +34,8 @@ parser.add_argument('--location', default='West US',
                    help='optional, [West US]')
 parser.add_argument('--ssh', default=22001, type=int,
                    help='optional, starts with 22001 and +1 for each machine in cluster')
-parser.add_argument('--coreos-image', default='2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0',
-                   help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Beta-494.1.0]')
+parser.add_argument('--coreos-image', default='2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0',
+                   help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0]')
 parser.add_argument('--num-nodes', default=3, type=int,
                    help='optional, number of nodes to create (or add), defaults to 3')
 parser.add_argument('--virtual-network-name',
@@ -51,6 +52,8 @@ parser.add_argument('--deis', action='store_true',
                    help='optional, automatically opens http and controller endpoints')
 parser.add_argument('--data-disk', action='store_true',
                    help='optional, attaches a data disk to each VM')
+parser.add_argument('--output', nargs='?', const='default',
+                   help='optional, output statefile, by default [cloud_service_name].json')
 
 cloud_init_template = """#cloud-config
 
@@ -117,7 +120,7 @@ def wait_for_async(request_id, operation_name, timeout):
             print(result.error.code)
             print(vars(result.error))
     print(result.status)
-    print(operation_name + ' took:' + str(count*5) + 's')
+    print(operation_name + ' took: ' + str(count*5) + 's')
 
 def linux_config(hostname, args):
     pk = PublicKey(args.ssh_thumb,
@@ -211,36 +214,69 @@ for i in range(args.num_nodes):
                     role_name=vm_name,
                     system_config=system, os_virtual_hard_disk=os_hd,
                     role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks)
-    wait_for_async(result.request_id, 'create VM' + vm_name, 30)
-    vms.append({'name':vm_name,
+    wait_for_async(result.request_id, 'create VM ' + vm_name, 30)
+    vms.append({'index':i,
+                'name':vm_name,
                 'host':args.cloud_service_name + '.cloudapp.net',
                 'port':ssh_port,
                 'user':'core',
                 'identity':args.ssh_cert.replace('.cer','.key')})
 
 #get the ip addresses
-def get_ips(service_name, deployment_name):
+def get_public_ips(service_name, deployment_name):
     result = sms.get_deployment_by_name(service_name, deployment_name)
+    ips = []
     for instance in result.role_instance_list:
-        ips.append(instance.public_ips[0].address)
+        if instance.public_ips and instance.public_ips[0]:
+            ips.append(instance.public_ips[0].address)
     return ips
 
 #print dns config
-if args.pip:
-    ips = []
-    ips = get_ips(args.cloud_service_name, args.cloud_service_name)
+def print_dns_config(pips):
     print 'dns file ----'
-    for ip in ips:
+    for ip in pips:
         print '@ 10800 IN A ' + ip
     print '* 10800 IN CNAME @'
     print 'end dns file ----'
 
 #print ~/.ssh/config
-print '~/.ssh/config ----'
-for vm in vms:
-    print 'Host ' + vm['name']
-    print '    HostName ' + vm['host']
-    print '    Port ' + str(vm['port'])
-    print '    User ' + vm['user']
-    print '    IdentityFile ' + vm['identity']
-print 'end ~/.ssh/config ----'
+def print_ssh_config():
+    print '~/.ssh/config ----'
+    for vm in vms:
+        print 'Host ' + vm['name']
+        print '    HostName ' + vm['host']
+        print '    Port ' + str(vm['port'])
+        print '    User ' + vm['user']
+        print '    IdentityFile ' + vm['identity']
+    print 'end ~/.ssh/config ----'
+
+def get_ips(service_name, deployment_name):
+    result = sms.get_deployment_by_name(service_name, deployment_name)
+    ips = []
+    for instance in result.role_instance_list:
+        if instance.ip_address:
+            ips.append(instance.ip_address)
+    return ips
+
+def print_ips(ips):
+    print 'ip addresses ----'
+    for ip in ips:
+        print ip
+    print 'end ip addresses ----'
+
+pips = []
+if args.pip:
+    pips = get_public_ips(args.cloud_service_name, args.cloud_service_name)
+    print_dns_config(pips)
+
+ips = get_ips(args.cloud_service_name, args.cloud_service_name)
+
+print_ssh_config()
+print_ips(ips)
+
+if args.output:
+    out_file_name = args.output if args.output is not 'default' else args.cloud_service_name + '.json'
+    cluster = {'args': vars(args), 'vms': vms, 'ips': ips, 'pips': pips}
+    with open(out_file_name, 'w') as out_file:
+         json.dump(cluster, out_file, sort_keys = True, indent = 4, ensure_ascii=False)
+    out_file.closed

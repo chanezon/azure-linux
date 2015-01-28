@@ -1,0 +1,115 @@
+#cloud-config
+coreos:
+  update:
+    ## NB: You should enable updates in production
+    ## Terraform already takes care of static IPs
+    ## in GCE, so it should be safe for weave nodes
+    ## to rejoin after reboot
+    reboot-strategy: 'off'
+  etcd:
+    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+    # uncomment the following line and replace it with your discovery URL
+    # discovery: https://discovery.etcd.io/74cdcd841d47bda846c25d46573bfe01
+    addr: $private_ipv4:4001
+    peer-addr: $private_ipv4:7001
+    # give etcd more time if it's under heavy load - prevent leader election thrashing
+    peer-election-timeout: 2000
+    # heartbeat interval should ideally be 1/4 or 1/5 of peer election timeout
+    peer-heartbeat-interval: 500
+  fleet:
+    # We have to set the public_ip here so this works on Vagrant -- otherwise, Vagrant VMs
+    # will all publish the same private IP. This is harmless for cloud providers.
+    public-ip: $private_ipv4
+    # allow etcd to slow down at times
+    etcd_request_timeout: 3
+  units:
+  - name: etcd.service
+    command: start
+  - name: fleet.service
+    command: start
+  - name: format-ephemeral.service
+    command: start
+    content: |
+      [Unit]
+      Description=Formats the ephemeral drive
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/sbin/wipefs -f /dev/sdc
+      ExecStart=/usr/sbin/mkfs.btrfs -f /dev/sdc
+  - name: var-lib-docker.mount
+    command: start
+    content: |
+      [Unit]
+      Description=Mount ephemeral to /var/lib/docker
+      Requires=format-ephemeral.service
+      After=format-ephemeral.service
+      Before=docker.service
+      [Mount]
+      What=/dev/sdc
+      Where=/var/lib/docker
+      Type=btrfs
+  - name: 10-weave.network
+    runtime: false
+    content: |
+      [Match]
+      Type=bridge
+      Name=weave*
+      [Network]
+  - name: weave.service
+    command: start
+    content: |
+      [Unit]
+      After=install-weave.service
+      Description=Weave Network
+      Documentation=http://zettio.github.io/weave/
+      Requires=install-weave.service
+      [Service]
+      EnvironmentFile=/etc/weave.env
+      ExecStartPre=/opt/bin/weave launch -password ${WEAVE_LAUNCH_PASSWORD} $WEAVE_LAUNCH_KNOW_NODES
+      ExecStartPre=/opt/bin/weave launch-dns $WEAVE_LAUNCH_DNS_ARGS -debug
+      ExecStart=/usr/bin/docker logs -f weave
+      SuccessExitStatus=2
+      ExecStop=/opt/bin/weave stop
+      ExecStop=/opt/bin/weave stop-dns
+  - name: install-weave.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      After=pre-fetch-container-images.service
+      After=network-online.target
+      After=docker.service
+      Description=Install Weave
+      Documentation=http://zettio.github.io/weave/
+      Requires=pre-fetch-container-images.service
+      Requires=network-online.target
+      Requires=docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/usr/bin/wget -N -P /opt/bin \
+          https://raw.github.com/zettio/weave/master/weave
+      ExecStartPre=/usr/bin/chmod +x /opt/bin/weave
+      ExecStart=/bin/echo Weave Installed
+  - name: pre-fetch-container-images.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      After=docker.service
+      Requires=docker.service
+      [Service]
+      EnvironmentFile=/etc/pre-fetch-container-images.env
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/bin/sh -c 'for i in $PRE_FETCH_CONTAINER_IMAGES; do /usr/bin/docker pull $i; done'
+write_files:
+  - path: /etc/pre-fetch-container-images.env
+    permissions: 0644
+    owner: root
+    content: |
+      PRE_FETCH_CONTAINER_IMAGES="\
+        zettio/weave:latest \
+        zettio/weavedns:latest \
+      "
