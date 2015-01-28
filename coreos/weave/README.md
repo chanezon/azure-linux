@@ -1,4 +1,4 @@
-# Installing Weave Docker networking on a CoreOS cluster on Azure
+# Installing Weave Docker virtual network on a CoreOS cluster on Azure
 
 This tutorial is part of [P@'s Linux on Azure series](/../../).
 
