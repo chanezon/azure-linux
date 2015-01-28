@@ -10,10 +10,10 @@ I write tutorials with a bit of automation code about things I didn't see docume
 
 ### Tutorials
 
-* [Installing a CoreOS cluster on Azure](/coreos/cloud-init/README.md) Docker orchestration with Fleet. Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure, using Docker and Fleet. Deploying @NetflixOSS containers.
-* [Installing Deis on a CoreOS cluster on Azure](/coreos/deis/README.md) Docker orchestration with Deis. Fun and games with DNS settings, then deploy a ruby app with git, and a Docker image for a Java 8 app.
+* [Installing a CoreOS cluster on Azure](/coreos/cloud-init/README.md) Docker orchestration with Fleet. Deploying a Java 8 application using Spring Boot and MongoDB on a CoreOS cluster on Azure, using Docker and Fleet. Deploying @NetflixOSS containers. This tutorial explains how to manually deploy VMs in your cluster. For a more automated process, see the cluster deployment tool tutorial below.
 * [Azure CoreOS cluster deployment tool](/coreos/cluster/README.md) Python script to deploy a CoreOS cluster in one shot.
-* [Installing Weave Docker networking on CoreOS on Azure](/coreos/weave/README.md).
+* [Installing Weave Docker virtual networking on CoreOS on Azure](/coreos/weave/README.md). Weave allows you to manage networking for your Docker containers from the command line. It includes a dns service.
+* [Installing Deis on a CoreOS cluster on Azure](/coreos/deis/README.md) Docker orchestration with Deis. Fun and games with DNS settings, then deploy a ruby app with git, and a Docker image for a Java 8 app.
 * [Installing Kubernetes on a CoreOS cluster on Azure](/coreos/kubernetes/README.md) (Work in Progress), Docker orchestration with Kubernetes. Cf links below for 2 approaches to networking that need testing on Azure: Weave and Flannel.
 
 ### Interesting links

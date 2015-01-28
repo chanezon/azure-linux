@@ -12,7 +12,7 @@ Since there is not yet a Terraform driver for Microsoft Azure, I'm using the azu
 
 ## Deploying a CoreOS cluster for Weave
 
-To deploy the cluster, you will use the [Azure CoreOS cluster deployment script](../../coreos/cluster/README.md).
+To deploy the cluster, you will use the [Azure CoreOS cluster deployment script](../../coreos/cluster/README.md). Read that document to understand how to get your subscription id, Azure and ssh certificates.
 
 In order to install Weave on the cluster, you need to deploy the cluster using the [Weave cloud-init file in this directory](../weave/weave.yml).
 
