@@ -46,7 +46,9 @@ Deploy the cluster with a command like this, from the cluster directory of this 
 --output
 ```
 
-This will generate a cluster state file in the current directory under the default name [cloud-service-name].json. You can also specify your own name for it as the --output parameter.
+This will generate a cluster state file in the current directory under the default name [cloud-service-name].json. You can also specify your own name for it as the --output parameter. This state file contains all the args used in the cluster script to create the cluster, all the ip addresses, and the informations allowing to ssh into each of the cluster's machines. Here is [a sample cluster state file](../cluster/pat-coreos-cloud-service.json).
+
+Before running the post processing script, check in the Azure console that all instances of the cluster have finished deploying and are in running state.
 
 ## Post processing
 

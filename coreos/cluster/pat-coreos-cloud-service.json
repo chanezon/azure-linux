@@ -1,0 +1,57 @@
+{
+  "args": {
+    "availability_set": "coreos-as",
+    "azure_cert": "/Users/pat/.azure/9b5910a1-...-8e79d5ea2841.pem",
+    "blob_container_url": "https://patcoreos.blob.core.windows.net/vhds/",
+    "cloud_service_name": "pat-coreos-cloud-service",
+    "coreos_image": "2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0",
+    "custom_data": "/Users/pat/code/azure-linux/coreos/weave/weave.yml",
+    "data_disk": true,
+    "deis": false,
+    "discovery_service_url": null,
+    "location": "West US",
+    "num_nodes": 3,
+    "output": "default",
+    "pip": false,
+    "ssh": 22001,
+    "ssh_cert": "/Users/pat/.ssh/ssh-cert.cer",
+    "ssh_thumb": "44EF1BA225B...EA398C365B5",
+    "subnet_names": null,
+    "subscription": "9b5910a1-...-85e8-8e79d5ea2841",
+    "virtual_network_name": null,
+    "vm_name_prefix": "coreos",
+    "vm_size": "Large"
+  },
+  "ips": [
+    "100.78.162.54",
+    "100.78.254.108",
+    "100.112.6.139"
+  ],
+  "pips": [],
+  "vms": [
+    {
+      "host": "pat-coreos-cloud-service.cloudapp.net",
+      "identity": "/Users/pat/.ssh/ssh-cert.key",
+      "index": 0,
+      "name": "pat-coreos-cloud-service-coreos-0",
+      "port": 22001,
+      "user": "core"
+    },
+    {
+      "host": "pat-coreos-cloud-service.cloudapp.net",
+      "identity": "/Users/pat/.ssh/ssh-cert.key",
+      "index": 1,
+      "name": "pat-coreos-cloud-service-coreos-1",
+      "port": 22002,
+      "user": "core"
+    },
+    {
+      "host": "pat-coreos-cloud-service.cloudapp.net",
+      "identity": "/Users/pat/.ssh/ssh-cert.key",
+      "index": 2,
+      "name": "pat-coreos-cloud-service-coreos-2",
+      "port": 22003,
+      "user": "core"
+    }
+  ]
+}
