@@ -17,6 +17,13 @@ brew install python
 sudo pip install azure
 ```
 
+Or installing pip on Linux, as root (else sudo)
+```
+cd /tmp
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py 
+```
+
 Check prerequisites:
 ```
 python -c "import azure; print(azure.__version__)"
