@@ -33,7 +33,7 @@ docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure
 
 docker is installed in the container, so after this you can connect to your newly created docker host with:
 ```
-MACHINE=$(docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux machine config pat-22)
+MACHINE=$(docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux machine config pat)
 docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux docker $MACHINE ps
 ```
 
