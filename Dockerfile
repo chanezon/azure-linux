@@ -5,6 +5,13 @@ RUN curl -L https://github.com/docker/machine/releases/download/v0.1.0-rc2/docke
 # docker
 RUN curl -sSL https://get.docker.com/ubuntu/ | sh
 
+#Node
+RUN curl -sL https://deb.nodesource.com/setup | bash -
+RUN apt-get install -y nodejs
+
+#Azure cli
+RUN npm install azure-cli -g
+
 VOLUME /usr/data
 
 CMD ["bash"]
