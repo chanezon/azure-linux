@@ -30,18 +30,11 @@ python -c "import azure; print(azure.__version__)"
 0.9.0
 ```
 
-### alternatively, use a docker container
+### Alternatively, use a docker container
 
-If you are using this script, there is good chance that you have docker installed on your machine. I wrote a [Dockerfile](container/Dockerfile) that checks out this project and installs all dependencies in a phusion/passenger Ubuntu container.
+If you are using this script, there is good chance that you have docker installed on your machine. I wrote a [Dockerfile](/Dockerfile) that checks out this project and installs all dependencies.
 
-It may not be up to date, since I haven't setup continuous integration yet.
-
-```
-docker run -t -i chanezon/cluster /bin/bash
-cd /azure-linux/coreos/cluster
-```
-
-Then you need to add you azure-cert.pem file to be able to run the script. If you have that file on another machine, copy the content of it and create it in the container with vi or cat. Another option is to extend the container and add a volume option, to be able to mount the directory with your certificate. But that approach works only if your docker daemon is on teh same machine.
+See the [main tutorial page](/) for how to use the chanezon/azure-linux container.
 
 ### Azure subscription id and management certificate
 
