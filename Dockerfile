@@ -5,4 +5,6 @@ RUN curl -L https://github.com/docker/machine/releases/download/v0.1.0-rc2/docke
 # docker
 RUN curl -sSL https://get.docker.com/ubuntu/ | sudo sh
 
+VOLUME /usr/data
+
 CMD ["bash"]
