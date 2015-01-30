@@ -19,12 +19,14 @@ It may not be up to date, since I haven't setup continuous integration yet.
 One way of running the container is to provision an [Ubuntu Docker VM from the Azure marketplace in the Azure portal](http://azure.microsoft.com/blog/2015/01/08/introducing-docker-in-microsoft-azure-marketplace/), then ssh to it, and run the container from there.
 
 ```
-docker run -ti chanezon/linux
+docker run -ti chanezon/azure-linux
 ```
 
 You are then root in /usr/src/app, where this project is checked out. You can follow the tutorial from there.
 
 If you run this container from your personal machine, or have ssh or azure certs on the machine from which you run the container, you can also mount data volumes, and run the container as a command.
+
+chanezon/azure-linux defines 2 volumes: /usr/data where you can mount the host directory where your azure certifcates are, and /root/.docker where you can mount a host directory where docker machine metadata will be persisted among several container runs. These 2 volumes allow you to use chanezon/azure-linux as a command, instead of opening a terminal in teh container to do work.
 
 This is an example of running docker machine from the container, mounting your ~/.ssh directory where your azure cert is, as well as mounting a local directory ~/.dockerindocker where machine is going to store your machine meta data, so that you can leverage them in future launches of the container.
 ```

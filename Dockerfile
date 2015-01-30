@@ -13,5 +13,6 @@ RUN apt-get install -y nodejs
 RUN npm install azure-cli -g
 
 VOLUME /usr/data
+VOLUME /root/.docker
 
 CMD ["bash"]
