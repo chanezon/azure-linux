@@ -17,7 +17,6 @@ args = parser.parse_args()
 # read cluster statefile
 with open(args.cloud_service_name + '.json', 'r') as f:
     state = json.loads(f.read())
-f.closed
 
 
 # These methods coming from https://git1-us-west.apache.org/repos/asf?p=mesos.git;a=blob;f=ec2/mesos_ec2.py;h=15d85b52cc58c8efaf7a8b771b4d5616282cf3b7;hb=HEAD

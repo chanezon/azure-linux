@@ -89,7 +89,6 @@ if not args.ssh_cert and not args.ssh_thumb:
 if args.custom_data:
     with open(args.custom_data, 'r') as f:
         cloud_init = f.read()
-    f.closed
 else:
     if args.discovery_service_url:
         cloud_init = cloud_init_template.format(args.discovery_service_url)
@@ -102,7 +101,6 @@ SERVICE_CERT_FORMAT = 'pfx'
 
 with open(args.ssh_cert) as f:
     service_cert_file_data = base64.b64encode(f.read())
-f.closed
 
 
 def wait_for_async(request_id, operation_name, timeout):
@@ -290,4 +288,3 @@ if args.output:
     cluster = {'args': vars(args), 'vms': vms, 'ips': ips, 'pips': pips}
     with open(out_file_name, 'w') as out_file:
         json.dump(cluster, out_file, sort_keys=True, indent=4, ensure_ascii=False)
-    out_file.closed
