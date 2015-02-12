@@ -13,47 +13,47 @@ import json
 parser = argparse.ArgumentParser(description='Create a CoreOS cluster on Microsoft Azure.')
 parser.add_argument('--version', action='version', version='azure-coreos-cluster 0.1')
 parser.add_argument('cloud_service_name',
-                   help='cloud service name')
+                    help='cloud service name')
 parser.add_argument('--ssh-cert',
-                   help='certificate file with public key for ssh, in .cer format')
+                    help='certificate file with public key for ssh, in .cer format')
 parser.add_argument('--ssh-thumb',
-                   help='thumbprint of ssh cert')
+                    help='thumbprint of ssh cert')
 parser.add_argument('--subscription', required=True,
-                   help='required Azure subscription id')
+                    help='required Azure subscription id')
 parser.add_argument('--azure-cert', required=True,
-                   help='required path to Azure cert pem file')
+                    help='required path to Azure cert pem file')
 parser.add_argument('--blob-container-url', required=True,
-                   help='required url to blob container where vm disk images will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/')
+                    help='required url to blob container where vm disk images will be created, including /, ex: https://patcoreos.blob.core.windows.net/vhds/')
 parser.add_argument('--vm-size', default='Small',
-                   help='optional, VM size [Small]')
+                    help='optional, VM size [Small]')
 parser.add_argument('--vm-name-prefix', default='coreos',
-                   help='optional, VM name prefix [coreos]')
+                    help='optional, VM name prefix [coreos]')
 parser.add_argument('--availability-set', default='coreos-as',
-                   help='optional, name of availability set for cluster [coreos-as]')
+                    help='optional, name of availability set for cluster [coreos-as]')
 parser.add_argument('--location', default='West US',
-                   help='optional, [West US]')
+                    help='optional, [West US]')
 parser.add_argument('--ssh', default=22001, type=int,
-                   help='optional, starts with 22001 and +1 for each machine in cluster')
+                    help='optional, starts with 22001 and +1 for each machine in cluster')
 parser.add_argument('--coreos-image', default='2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0',
-                   help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0]')
+                    help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0]')
 parser.add_argument('--num-nodes', default=3, type=int,
-                   help='optional, number of nodes to create (or add), defaults to 3')
+                    help='optional, number of nodes to create (or add), defaults to 3')
 parser.add_argument('--virtual-network-name',
-                   help='optional, name of an existing virtual network to which we will add the VMs')
+                    help='optional, name of an existing virtual network to which we will add the VMs')
 parser.add_argument('--subnet-names',
-                   help='optional, subnet name to which the VMs will belong')
+                    help='optional, subnet name to which the VMs will belong')
 parser.add_argument('--custom-data',
-                   help='optional, path to your own cloud-init file')
+                    help='optional, path to your own cloud-init file')
 parser.add_argument('--discovery-service-url',
-                   help='optional, url for an existing cluster discovery service. Else we will generate one.')
+                    help='optional, url for an existing cluster discovery service. Else we will generate one.')
 parser.add_argument('--pip', action='store_true',
-                   help='optional, assigns public instance ip addresses to each VM')
+                    help='optional, assigns public instance ip addresses to each VM')
 parser.add_argument('--deis', action='store_true',
-                   help='optional, automatically opens http and controller endpoints')
+                    help='optional, automatically opens http and controller endpoints')
 parser.add_argument('--data-disk', action='store_true',
-                   help='optional, attaches a data disk to each VM')
+                    help='optional, attaches a data disk to each VM')
 parser.add_argument('--output', nargs='?', const='default',
-                   help='optional, output statefile, by default [cloud_service_name].json')
+                    help='optional, output statefile, by default [cloud_service_name].json')
 
 cloud_init_template = """#cloud-config
 
@@ -75,15 +75,15 @@ args = parser.parse_args()
 
 # Create SSH cert if it's not given
 if not args.ssh_cert and not args.ssh_thumb:
-  print 'SSH arguments not given, generating certificate'
-  with open(os.devnull, 'w') as shutup:
-      subprocess.call('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem', shell=True, stdout=shutup, stderr=shutup)
-      subprocess.call('chmod 600 ssh-cert.key', shell=True, stdout=shutup, stderr=shutup)
-      subprocess.call('openssl  x509 -outform der -in ssh-cert.pem -out ssh-cert.cer', shell=True, stdout=shutup, stderr=shutup)
-      thumbprint = subprocess.check_output('openssl x509 -in ssh-cert.pem -sha1 -noout -fingerprint | sed s/://g', shell=True)
-      args.ssh_thumb = thumbprint.split('=')[1].replace('\n', '')
-      args.ssh_cert = './ssh-cert.cer'
-  print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
+    print 'SSH arguments not given, generating certificate'
+    with open(os.devnull, 'w') as shutup:
+        subprocess.call('openssl req -x509 -nodes -days 365 -newkey rsa:2048 -config cert.conf -keyout ssh-cert.key -out ssh-cert.pem', shell=True, stdout=shutup, stderr=shutup)
+        subprocess.call('chmod 600 ssh-cert.key', shell=True, stdout=shutup, stderr=shutup)
+        subprocess.call('openssl  x509 -outform der -in ssh-cert.pem -out ssh-cert.cer', shell=True, stdout=shutup, stderr=shutup)
+        thumbprint = subprocess.check_output('openssl x509 -in ssh-cert.pem -sha1 -noout -fingerprint | sed s/://g', shell=True)
+        args.ssh_thumb = thumbprint.split('=')[1].replace('\n', '')
+        args.ssh_cert = './ssh-cert.cer'
+    print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
 
 def get_token():
     response = urllib2.urlopen('https://discovery.etcd.io/new')
@@ -119,7 +119,7 @@ SERVICE_CERT_FORMAT = 'pfx'
 
 with open(args.ssh_cert) as f:
     service_cert_file_data = base64.b64encode(f.read())
-f.closed
+
 
 def wait_for_async(request_id, operation_name, timeout):
     count = 0
@@ -139,14 +139,16 @@ def wait_for_async(request_id, operation_name, timeout):
     print(result.status)
     print(operation_name + ' took: ' + str(count*5) + 's')
 
+
 def linux_config(hostname, args):
     pk = PublicKey(args.ssh_thumb,
                    u'/home/core/.ssh/authorized_keys')
     system = LinuxConfigurationSet(hostname, 'core', None, True,
-              custom_data=cloud_init)
+                                   custom_data=cloud_init)
     system.ssh.public_keys.public_keys.append(pk)
     system.disable_ssh_password_authentication = True
     return system
+
 
 def endpoint_config(name, port):
     endpoint = ConfigurationSetInputEndpoint(name, 'tcp', port, port, name)
@@ -156,6 +158,7 @@ def endpoint_config(name, port):
     load_balancer_probe.protocol = 'http'
     endpoint.load_balancer_probe = load_balancer_probe
     return endpoint
+
 
 def network_config(subnet_name=None, port='59913', public_ip_name=None):
     network = ConfigurationSet()
@@ -171,6 +174,7 @@ def network_config(subnet_name=None, port='59913', public_ip_name=None):
         network.input_endpoints.input_endpoints.append(endpoint_config('deis', '2222'))
     return network
 
+
 def data_hd(target_container_url, target_blob_name, target_lun, target_disk_size_in_gb):
     media_link = target_container_url + target_blob_name
     data_hd = DataVirtualHardDisk()
@@ -182,22 +186,25 @@ def data_hd(target_container_url, target_blob_name, target_lun, target_disk_size
 
 sms = ServiceManagementService(args.subscription, args.azure_cert)
 
-#Create the cloud service
+# Create the cloud service
 sms.create_hosted_service(
     args.cloud_service_name, label=args.cloud_service_name, location=args.location)
 print('created service ' + args.cloud_service_name)
 time.sleep(2)
 
-#upload ssh cert to cloud-service
+# upload ssh cert to cloud-service
 result = sms.add_service_certificate(args.cloud_service_name,
                                      service_cert_file_data, SERVICE_CERT_FORMAT, '')
 wait_for_async(result.request_id, 'upload cert', 15)
 
-vms =[]
+def get_vm_name(args, i):
+    return args.cloud_service_name + '-' + args.vm_name_prefix + '-' + str(i)
 
-#Create the VMs
+vms = []
+
+# Create the VMs
 for i in range(args.num_nodes):
-    ssh_port = args.ssh +i
+    ssh_port = args.ssh + i
     vm_name = get_vm_name(args, i)
     if args.pip:
         pip_name = vm_name
@@ -205,10 +212,10 @@ for i in range(args.num_nodes):
         pip_name = None
     media_link = args.blob_container_url + vm_name
     os_hd = OSVirtualHardDisk(media_link=media_link,
-                            source_image_name=args.coreos_image)
+                              source_image_name=args.coreos_image)
     system = linux_config(vm_name, args)
     network = network_config(subnet_name=args.subnet_names, port=ssh_port, public_ip_name=pip_name)
-    #specifiy the data disk, important to start at lun = 0
+    # specifiy the data disk, important to start at lun = 0
     if args.data_disk:
         data_disk = data_hd(args.blob_container_url, vm_name + '-data.vhd', 0, 25)
         data_disks = DataVirtualHardDisks()
@@ -229,14 +236,15 @@ for i in range(args.num_nodes):
                     system_config=system, os_virtual_hard_disk=os_hd,
                     role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks)
     wait_for_async(result.request_id, 'create VM ' + vm_name, 30)
-    vms.append({'index':i,
-                'name':vm_name,
-                'host':args.cloud_service_name + '.cloudapp.net',
-                'port':ssh_port,
-                'user':'core',
-                'identity':args.ssh_cert.replace('.cer','.key')})
+    vms.append({'index': i,
+                'name': vm_name,
+                'host': args.cloud_service_name + '.cloudapp.net',
+                'port': ssh_port,
+                'user': 'core',
+                'identity': args.ssh_cert.replace('.cer', '.key')})
 
-#get the ip addresses
+
+# get the ip addresses
 def get_public_ips(service_name, deployment_name):
     result = sms.get_deployment_by_name(service_name, deployment_name)
     ips = []
@@ -245,7 +253,8 @@ def get_public_ips(service_name, deployment_name):
             ips.append(instance.public_ips[0].address)
     return ips
 
-#print dns config
+
+# print dns config
 def print_dns_config(pips):
     print 'dns file ----'
     for ip in pips:
@@ -253,7 +262,8 @@ def print_dns_config(pips):
     print '* 10800 IN CNAME @'
     print 'end dns file ----'
 
-#print ~/.ssh/config
+
+# print ~/.ssh/config
 def print_ssh_config():
     print '~/.ssh/config ----'
     for vm in vms:
@@ -264,6 +274,7 @@ def print_ssh_config():
         print '    IdentityFile ' + vm['identity']
     print 'end ~/.ssh/config ----'
 
+
 def get_ips(service_name, deployment_name):
     result = sms.get_deployment_by_name(service_name, deployment_name)
     ips = []
@@ -271,6 +282,7 @@ def get_ips(service_name, deployment_name):
         if instance.ip_address:
             ips.append(instance.ip_address)
     return ips
+
 
 def print_ips(ips):
     print 'ip addresses ----'
@@ -293,5 +305,4 @@ if args.output:
     out_file_name = args.output if args.output is not 'default' else args.cloud_service_name + '.json'
     cluster = {'discovery_url': discovery_url,'args': vars(args), 'vms': vms, 'ips': ips, 'pips': pips}
     with open(out_file_name, 'w') as out_file:
-         json.dump(cluster, out_file, sort_keys = True, indent = 4, ensure_ascii=False)
-    out_file.closed
+        json.dump(cluster, out_file, sort_keys=True, indent=4, ensure_ascii=False)

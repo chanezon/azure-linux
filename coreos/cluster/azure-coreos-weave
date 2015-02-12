@@ -1,36 +1,37 @@
 #!/usr/bin/env python
 
 import argparse
-import os
 import subprocess
 import json
+
 
 parser = argparse.ArgumentParser(description='Post processing for weave for a CoreOS cluster on Microsoft Azure.')
 parser.add_argument('--version', action='version', version='azure-coreos-weave 0.1')
 parser.add_argument('cloud_service_name',
-                   help='cloud service name, will look for a state file called [cloud_service_name].json')
+                    help='cloud service name, will look for a state file called [cloud_service_name].json')
 parser.add_argument('--weave-password', default='f00bar',
-                   help='optional, password for weave cluster [f00bar]')
+                    help='optional, password for weave cluster [f00bar]')
 
 args = parser.parse_args()
 
-#read cluster statefile
+# read cluster statefile
 with open(args.cloud_service_name + '.json', 'r') as f:
     state = json.loads(f.read())
-f.closed
 
-#These methods coming from https://git1-us-west.apache.org/repos/asf?p=mesos.git;a=blob;f=ec2/mesos_ec2.py;h=15d85b52cc58c8efaf7a8b771b4d5616282cf3b7;hb=HEAD
+
+# These methods coming from https://git1-us-west.apache.org/repos/asf?p=mesos.git;a=blob;f=ec2/mesos_ec2.py;h=15d85b52cc58c8efaf7a8b771b4d5616282cf3b7;hb=HEAD
 # Copy a file to a given host through scp, throwing an exception if scp fails
 def scp(host, identity_file, local_file, dest_file):
-  subprocess.check_call(
-      "scp -q -o StrictHostKeyChecking=no -i %s '%s' 'root@%s:%s'" %
-      (identity_file, local_file, host, dest_file), shell=True)
+    subprocess.check_call(
+        "scp -q -o StrictHostKeyChecking=no -i %s '%s' 'root@%s:%s'" %
+        (identity_file, local_file, host, dest_file), shell=True)
+
 
 # Run a command on a host through ssh, throwing an exception if ssh fails
 def ssh(ssh_opts, command):
-  subprocess.check_call(
-      "ssh -t -o StrictHostKeyChecking=no -i %s -p %s %s@%s '%s'" %
-      (ssh_opts['identity'], str(ssh_opts['port']), ssh_opts['user'], ssh_opts['host'], command), shell=True)
+    subprocess.check_call(
+        "ssh -t -o StrictHostKeyChecking=no -i %s -p %s %s@%s '%s'" %
+        (ssh_opts['identity'], str(ssh_opts['port']), ssh_opts['user'], ssh_opts['host'], command), shell=True)
 
 weave_env_template = """cat << ENVIRON | sudo tee /etc/weave.env
 WEAVE_LAUNCH_KNOW_NODES="{0}"
@@ -38,6 +39,7 @@ WEAVE_LAUNCH_PASSWORD="{1}"
 WEAVE_LAUNCH_DNS_ARGS="10.10.1.1{2}/16"
 ENVIRON
 """
+
 
 def weave_post_processing(vm_list):
     peers = ' '.join(state['ips'])
