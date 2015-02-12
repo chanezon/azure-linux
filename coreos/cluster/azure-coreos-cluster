@@ -85,17 +85,34 @@ if not args.ssh_cert and not args.ssh_thumb:
       args.ssh_cert = './ssh-cert.cer'
   print 'Generated SSH certificate with thumbprint ' + args.ssh_thumb
 
+def get_token():
+    response = urllib2.urlopen('https://discovery.etcd.io/new')
+    return response.read()
+
+def get_vm_name(args, i):
+    return args.cloud_service_name + '-' + args.vm_name_prefix + '-' + str(i)
+
 # Setup custom data
 if args.custom_data:
     with open(args.custom_data, 'r') as f:
-        cloud_init = f.read()
+        cloud_init_template = f.read()
+        if "discovery: {0}" in cloud_init_template:
+            discovery_url = get_token()
+            if "{1}" in cloud_init_template:
+                master_host = get_vm_name(args, 0)
+                cloud_init = cloud_init_template.format(discovery_url, master_host)
+            else:
+                cloud_init = cloud_init_template.format(discovery_url)
+        else:
+            cloud_init = cloud_init_template
+            discovery_url = 'look in cloud-config file'
     f.closed
 else:
     if args.discovery_service_url:
         cloud_init = cloud_init_template.format(args.discovery_service_url)
     else:
         response = urllib2.urlopen('https://discovery.etcd.io/new')
-        discovery_url = response.read()
+        discovery_url = get_token()
         cloud_init = cloud_init_template.format(discovery_url)
 
 SERVICE_CERT_FORMAT = 'pfx'
@@ -175,9 +192,6 @@ time.sleep(2)
 result = sms.add_service_certificate(args.cloud_service_name,
                                      service_cert_file_data, SERVICE_CERT_FORMAT, '')
 wait_for_async(result.request_id, 'upload cert', 15)
-
-def get_vm_name(args, i):
-    return args.cloud_service_name + '-' + args.vm_name_prefix + '-' + str(i)
 
 vms =[]
 
@@ -273,10 +287,11 @@ ips = get_ips(args.cloud_service_name, args.cloud_service_name)
 
 print_ssh_config()
 print_ips(ips)
+print discovery_url
 
 if args.output:
     out_file_name = args.output if args.output is not 'default' else args.cloud_service_name + '.json'
-    cluster = {'args': vars(args), 'vms': vms, 'ips': ips, 'pips': pips}
+    cluster = {'discovery_url': discovery_url,'args': vars(args), 'vms': vms, 'ips': ips, 'pips': pips}
     with open(out_file_name, 'w') as out_file:
          json.dump(cluster, out_file, sort_keys = True, indent = 4, ensure_ascii=False)
     out_file.closed
