@@ -38,7 +38,7 @@ parser.add_argument('--coreos-image', default='2b171e93f07c4903bcad35bda10acf22_
                     help='optional, [2b171e93f07c4903bcad35bda10acf22__CoreOS-Stable-522.5.0]')
 parser.add_argument('--num-nodes', default=3, type=int,
                     help='optional, number of nodes to create (or add), defaults to 3')
-parser.add_argument('--virtual-network-name',
+parser.add_argument('--virtual-network-name', default=None,
                     help='optional, name of an existing virtual network to which we will add the VMs')
 parser.add_argument('--subnet-names',
                     help='optional, subnet name to which the VMs will belong')
@@ -232,7 +232,8 @@ for i in range(args.num_nodes):
                     args.cloud_service_name, deployment_name=args.cloud_service_name,
                     deployment_slot='production', label=vm_name,
                     role_name=vm_name, system_config=system, os_virtual_hard_disk=os_hd,
-                    role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks)
+                    role_size=args.vm_size, network_config=network, data_virtual_hard_disks=data_disks,
+                    virtual_network_name=args.virtual_network_name)
     else:
         result = sms.add_role(
                     args.cloud_service_name, deployment_name=args.cloud_service_name,
