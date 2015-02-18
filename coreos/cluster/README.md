@@ -91,6 +91,9 @@ SHA1 Fingerprint=44EF1BA225BE64154F7A55826CE56EA398C365B5
 
 Creates a 3 node cluster called pat-coreos-cloud-service.
 use --num-nodes 5 option to bump it to create 5 instances instead of the default 3.
+
+## More involved examples
+
 A more robust cluster would look like this:
 
 ```
@@ -102,6 +105,34 @@ A more robust cluster would look like this:
 --num-nodes 5 \
 --location "East US" \
 --vm-size Large \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/
+```
+
+Sometimes, you want to partition micro services in different CoreOS clusters, but still let them communicate with each other without exposing them to the outside. For that you first [create a virtual network in the Azure console](https://msdn.microsoft.com/library/azure/dn631643.aspx), in the same region that you will deploy the clusters, then provision the 2 clusters with the --virtual-network-name option.
+
+```
+./azure-coreos-cluster pat-coreos-cluster-1 \
+--ssh-cert ~/.ssh/ssh-cert.cer \
+--ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
+--num-nodes 5 \
+--location "East US" \
+--vm-size Large \
+--virtual-network-name=my-network \
+--blob-container-url https://patcoreos.blob.core.windows.net/vhds/
+```
+
+```
+./azure-coreos-cluster pat-coreos-cluster-2 \
+--ssh-cert ~/.ssh/ssh-cert.cer \
+--ssh-thumb 44EF1BA225BE64154F7A55826CE56EA398C365B5 \
+--subscription 9b5910a1-...-8e79d5ea2841 \
+--azure-cert ~/.azure/azure-cert.pem \
+--num-nodes 5 \
+--location "East US" \
+--vm-size Large \
+--virtual-network-name=my-network \
 --blob-container-url https://patcoreos.blob.core.windows.net/vhds/
 ```
 
