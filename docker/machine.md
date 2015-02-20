@@ -11,7 +11,7 @@ Download one of the [Docker machine preview builds](https://github.com/docker/ma
 ## Create a VM
 
 ```
-$ machine create -d azure \
+$ docker-machine create -d azure \
 --azure-subscription-id="9b5910a1-...-8e79d5ea2841" \
 --azure-subscription-cert="azure-cert.pem" \
 pat-1
@@ -39,12 +39,12 @@ gpg:               imported: 1  (RSA: 1)
 + sudo -E sh -c sleep 3; apt-get update; apt-get install -y -q lxc-docker
 + sudo -E sh -c docker version
 INFO[0341] "pat-1" has been created and is now the active machine 
-INFO[0341] To connect: docker $(machine config pat-1) ps 
+INFO[0341] To connect: docker $(docker-machine config pat-1) ps 
 ```
 
 There is an option --azure-name to specify the name you want Azure to use for the cloud service where this machine will be created, but it does not seem to be taken into account. I logged [issue 419](https://github.com/docker/machine/issues/419) about this. [This issue is now fixed in Docker main branch](https://github.com/docker/machine/pull/440).
 
-machine writes metadata about the machine that has been created at ~/.docker/machines/[machine-name]/config.json, and creates certificates to secure communication with the remote machine in ~/.docker/machines/[machine-name]
+docker-machine writes metadata about the machine that has been created at ~/.docker/machines/[machine-name]/config.json, and creates certificates to secure communication with the remote machine in ~/.docker/machines/[machine-name]
 
 ```
 ls ~/.docker/machines/pat-1
@@ -75,7 +75,7 @@ The Azure driver has many other options: according to machine create --help
 ## Check the VM
 
 ```
-$ machine ls
+$ docker-machine ls
 NAME           ACTIVE   DRIVER   STATE     URL
 pat-1                   azure    Running   tcp://pat-1-20150128000516.cloudapp.net:2376
 pat-2          *        azure    Running   tcp://pat-2-20150128000710.cloudapp.net:2376
@@ -84,10 +84,10 @@ pat-2          *        azure    Running   tcp://pat-2-20150128000710.cloudapp.n
 ## Have fun with Docker
 
 ```
-docker $(machine config pat-1) ps
+docker $(docker-machine config pat-1) ps
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 
-docker $(machine config pat-1) run -t -i ubuntu /bin/bash
+docker $(docker-machine config pat-1) run -t -i ubuntu /bin/bash
 Unable to find image 'ubuntu' locally
 ubuntu:latest: The image you are pulling has been verified
 511136ea3c5a: Pull complete 
@@ -125,6 +125,6 @@ Number of parallel builds: 4
 -->   windows/amd64: github.com/docker/machine
 ```
 
-It is using a Docker container to do a cross platform build of Docker. The binaries are generated in the current directory. Create a symlink from somewhere in your PATH to machine_darwin_386.
+It is using a Docker container to do a cross platform build of Docker. The binaries are generated in the current directory. Create a symlink from somewhere in your PATH to docker-machine_darwin_386.
 
 Have fun with Docker machine!
