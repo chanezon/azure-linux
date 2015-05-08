@@ -1,4 +1,4 @@
-# Provisioning a Docker Swarn cluster on Azure
+# Provisioning a Docker Swarm cluster on Azure
 
 ## Using docker-machine
 

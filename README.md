@@ -13,7 +13,7 @@ These tutorials use many tools: docker, python, pip, Azure Python SDK, Azure Cro
 ### Tutorials
 
 * [Provisioning Docker containers on Azure with Docker machine](/docker/machine.md)
-* [Provisioning a Docker Swarn cluster on Azure](/docker/swarm.md)
+* [Provisioning a Docker Swarm cluster on Azure](/docker/swarm.md)
 
 ### Interesting links
 
