@@ -6,40 +6,33 @@ Documentation and examples for how to leverage various linux technologies with M
 
 I write tutorials with a bit of automation code about things I didn't see documented elsewhere, or where I want to add context and details to existing docs and blog posts. I also list a set of links to relevant docs or blog posts that I found useful.
 
-## Using the Dockerfile
+These tutorials use many tools: docker, python, pip, Azure Python SDK, Azure Cross platform CLI, docker machine... In order to make it easier for anyone to follow the tutorials, I packaged all these tools in a Docker container. See [Using the chanezon/azure-linux Dockerfile](/docker/usingdockerfile.md) for how to use it.
 
-I'm writing these tutorials on a Mac. They make use of many tools that are easy to install on Mac or Linux, but less so on Wndows: docker, python, pip, Azure Python SDK, Azure Cross platform CLI, docker machine,...
+## Docker
 
-If you use these tutorials, there is a good chance that you have at least a Docker client installed on your machine. In order to make your life easier, this project has a [Dockerfile](Dockerfile) that has all these tools and their dependencies installed.
+### Tutorials
 
-I have built it as [chanezon/azure-linux](https://registry.hub.docker.com/u/chanezon/azure-linux/) on docker hub.
+* [Provisioning Docker containers on Azure with Docker machine](/docker/machine.md)
+* [Provisioning a Docker Swarn cluster on Azure](/docker/swarm.md)
 
-It may not be up to date, since I haven't setup continuous integration yet.
+### Interesting links
 
-One way of running the container is to provision an [Ubuntu Docker VM from the Azure marketplace in the Azure portal](http://azure.microsoft.com/blog/2015/01/08/introducing-docker-in-microsoft-azure-marketplace/), then ssh to it, and run the container from there.
+I assume you already know Docker basics: there are plenty of resources and tutorials out there about it. If you don't, get started with @kartar's excellent book [The Docker book - Containerization is the new virtualization](http://www.dockerbook.com/), then read the official docs.
 
-```
-docker run -ti chanezon/azure-linux
-```
+Here are resources to understand how Docker works internally, where it is going, and what kind of innovation is happening in different part of the ecosystem as it matures: orchestration, networking, storage, management and monitoring.
 
-You are then root in /usr/src/app, where this project is checked out. You can follow the tutorial from there.
-
-If you run this container from your personal machine, or have ssh or azure certs on the machine from which you run the container, you can also mount data volumes, and run the container as a command.
-
-chanezon/azure-linux defines 2 volumes: /usr/data where you can mount the host directory where your azure certifcates are, and /root/.docker where you can mount a host directory where docker machine metadata will be persisted among several container runs. These 2 volumes allow you to use chanezon/azure-linux as a command, instead of opening a terminal in the container to do work.
-
-This is an example of running docker machine from the container, mounting your ~/.ssh directory where your azure cert is, as well as mounting a local directory ~/.dockerindocker where machine is going to store your machine meta data, so that you can leverage them in future launches of the container.
-```
-docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux machine create -d azure --azure-subscription-id="9b5910a1...-8e79d5ea2841" --azure-subscription-cert="/usr/data/azure-cert.pem" pat
-```
-
-docker is installed in the container, so after this you can connect to your newly created docker host with:
-```
-MACHINE=$(docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux machine config pat)
-docker run -v ~/.ssh:/usr/data -v ~/.dockerindocker:/root/.docker chanezon/azure-linux docker $MACHINE ps
-```
-
-One file you will need for a lot of this work is your Azure management certificate. See [Azure CoreOS cluster deployment tool](/coreos/cluster/README.md) for how to generate it. If you generate it on another machine, you can either mount the directory where it is, if running on the same machine, or create it in the container with vi or cat, pasting from your client machine.
+* [Creating a Docker host machine on Azure](https://docs.docker.com/installation/azure/#creating-a-docker-host-machine-on-azure) from Docker official docs
+* [Provisioning an Ubuntu Docker VM from the Azure marketplace in the Azure portal](http://azure.microsoft.com/blog/2015/01/08/introducing-docker-in-microsoft-azure-marketplace/): this is the easiest way to get started with Docker on Azure.
+* Azure Docs [Using the Docker VM Extension from Azure Cross-Platform Interface (xplat-cli)](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-docker-with-xplat-cli/)
+* [Running ASP.NET 5 applications in Linux Containers with Docker](http://blogs.msdn.com/b/webdev/archive/2015/01/14/running-asp-net-5-applications-in-linux-containers-with-docker.aspx): One word: "Inconceivable!" Try out @ahmetalpbalkan's excellent tutorial.
+* [Creating containers](http://crosbymichael.com/creating-containers-part-1.html) @crosbymichael's series on the internals of what containers are is a very good read, to understand how Docker works.
+* @jpetazzo's [articles](http://blog.docker.com/author/jerome/) and [decks](http://www.slideshare.net/jpetazzo/) also go pretty deep.
+* [Using Fig and Flocker to build, test, deploy and migrate multi-server Dockerized apps](https://clusterhq.com/blog/fig-flocker-multi-server-docker-apps/) One area of innovation for Docker is storage. One issue with Docker is that stateless containers are easy to move to a different host (typically done by an orchestration engine), but stateful containers for database services are tied to a host. Flocker is an interesting answer to this issue, allowing you to snapshot and migrate your data volumes using a port of zfs for Linux. Flocker provides multi host container orchestration, supporting part of the fig format (which will be the format supported in Docker groups), but the most differentiating aspect they provide is the zfs based volume migration capability.
+*  [Life and Docker networking](http://weaveblog.com/2014/11/13/life-and-docker-networking/) Networking is another big area of innovation in the Docker ecosystem. Thoughtful essay by @monadic about the various approaches to Docker networking these days, and the need for a plugin system for Docker.
+* [Docker groups](https://github.com/docker/docker/issues/9175) The Docker stack composition proposal, for Docker native orchestration. There's a release implementing it that you can try. This is the replacement for Fig.
+* [Docker clustering with swarm](https://github.com/docker/swarm)
+* [Docker plugins proposal](https://github.com/docker/docker/pull/8968)
+* [Docker hosts management with machine](https://github.com/docker/machine) there is an Azure driver for it
 
 ## CoreOS
 
@@ -64,27 +57,3 @@ The main issue installing Kubernetes on Azure is networking: [Kubernetes needs t
 [Snappy Ubuntu Core](http://www.ubuntu.com/cloud/tools/snappy) is a minimal server image of Ubuntu, coupled with a transactional OS update mechanism, similar to CoreOS, and an application model inspired by mobile app stores called snappy. It was announced 12/9/2014, with initial support for Azure first.
 
 * [Getting started with Snappy Ubuntu Core on Azure](/ubuntu/README.md)
-
-## Docker
-
-### Tutorials
-
-* [Provisioning Docker containers on Azure with Docker machine](/docker/machine.md)
-
-### Interesting links
-
-I assume you already know Docker basics: there are plenty of resources and tutorials out there about it. If you don't, get started with @kartar's excellent book [The Docker book - Containerization is the new virtualization](http://www.dockerbook.com/), then read the official docs.
-
-Here are resources to understand how Docker works internally, where it is going, and what kind of innovation is happening in different part of the ecosystem as it matures: orchestration, networking, storage, management and monitoring.
-
-* [Provisioning an Ubuntu Docker VM from the Azure marketplace in the Azure portal](http://azure.microsoft.com/blog/2015/01/08/introducing-docker-in-microsoft-azure-marketplace/): this is the easiest way to get started with Docker on Azure.
-* Azure Docs [Using the Docker VM Extension from Azure Cross-Platform Interface (xplat-cli)](http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-docker-with-xplat-cli/)
-* [Running ASP.NET 5 applications in Linux Containers with Docker](http://blogs.msdn.com/b/webdev/archive/2015/01/14/running-asp-net-5-applications-in-linux-containers-with-docker.aspx): One word: "Inconceivable!" Try out @ahmetalpbalkan's excellent tutorial.
-* [Creating containers](http://crosbymichael.com/creating-containers-part-1.html) @crosbymichael's series on the internals of what containers are is a very good read, to understand how Docker works.
-* @jpetazzo's [articles](http://blog.docker.com/author/jerome/) and [decks](http://www.slideshare.net/jpetazzo/) also go pretty deep.
-* [Using Fig and Flocker to build, test, deploy and migrate multi-server Dockerized apps](https://clusterhq.com/blog/fig-flocker-multi-server-docker-apps/) One area of innovation for Docker is storage. One issue with Docker is that stateless containers are easy to move to a different host (typically done by an orchestration engine), but stateful containers for database services are tied to a host. Flocker is an interesting answer to this issue, allowing you to snapshot and migrate your data volumes using a port of zfs for Linux. Flocker provides multi host container orchestration, supporting part of the fig format (which will be the format supported in Docker groups), but the most differentiating aspect they provide is the zfs based volume migration capability.
-*  [Life and Docker networking](http://weaveblog.com/2014/11/13/life-and-docker-networking/) Networking is another big area of innovation in the Docker ecosystem. Thoughtful essay by @monadic about the various approaches to Docker networking these days, and the need for a plugin system for Docker.
-* [Docker groups](https://github.com/docker/docker/issues/9175) The Docker stack composition proposal, for Docker native orchestration. There's a release implementing it that you can try. This is the replacement for Fig.
-* [Docker clustering with swarm](https://github.com/docker/swarm)
-* [Docker plugins proposal](https://github.com/docker/docker/pull/8968)
-* [Docker hosts management with machine](https://github.com/docker/machine) there is an Azure driver for it
